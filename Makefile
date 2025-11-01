@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -Wall -Wextra 
-LDFLAGS = -lSDL2 -lSDL2_image
+CFLAGS = -pedantic -Werror -Wall -Wextra -Wvla
+LDFLAGS = -lm -lSDL2 -lSDL2_image
 
 SRC_DIR = src
 OBJ_DIR = obj
@@ -23,6 +23,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 debug: CFLAGS+=-g -fsanitize=address
+debug: LDFLAGS+=-g
 debug: all
 
 clean:
