@@ -92,6 +92,7 @@ Point* project(Point* point)
   double y = dot_product(rel, up);
   double z = dot_product(rel, forward);
 
+  free(cp);
   free(cl);
   free(forward);
   free(word_up);

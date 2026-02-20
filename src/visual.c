@@ -13,8 +13,12 @@ void draw_links(SDL_Renderer *renderer, Vertex *vertex_a)
   {
     Vertex *vertex_b = links->vertex;
     Point *projection_b = project(vertex_b->position);
+
     if (!projection_b)
+    {
+      free(projection_a);
       return;
+    }
 
     SDL_RenderDrawLine(renderer, projection_a->x, projection_a->y, projection_b->x, projection_b->y);
 
