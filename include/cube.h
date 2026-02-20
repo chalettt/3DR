@@ -10,7 +10,7 @@ typedef struct cube
 } Cube;
 
 Cube *create_cube(int size, Point *origin);
-void rot_cube_x(Cube *cube, Point *origin, double alpha);
+void rot_cube_y(Cube *cube, Point *origin, double alpha);
 void destroy_cube(Cube *cube);
 
 #endif /* ! CUBE_H */
