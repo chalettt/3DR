@@ -3,7 +3,7 @@ This project is the beginning of (I hope) a 3D renderer made in C and SDL, for n
 
 ## Installation
 ```sh
-git clone https://github.com/wyattros/RotCube.git
+git clone https://github.com/chalettt/RotCube.git
 cd RotCube && make
 ```
 
