@@ -3,28 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <math.h>
 #include <stdlib.h>
-
-static Point* camera = NULL;
-
-Point* init_camera(double x, double y, double z)
-{
-  camera = malloc(sizeof(Point));
-  if (!camera)
-    return ERROR("Camera initialization failed."), NULL;
-
-  camera->x = x;
-  camera->y = y;
-  camera->z = z;
-
-  return camera;
-}
-
-Point *move_camera(Direction d, double delta)
-{
-  return add_dir(camera, d, delta);
-}
 
 // Creates a link and initializes each component.
 Links *create_links(Vertex *vertex)
@@ -95,35 +74,5 @@ void connect_vertex(Vertex *a, Vertex *b)
   link(b, a);
 }
 
-// Rotates a vertex by an angle alpha along the Y axis according to the center
-// of the space.
-void rot_x(Vertex *vertex, Point *origin, double alpha)
-{
-  Point *p = vertex->position;
-  double x = p->x - origin->x;
-  double y = p->y - origin->y;
-  double z = p->z - origin->z;
 
-  double new_x = x * cos(alpha) - z * sin(alpha);
-  double new_z = x * sin(alpha) + z * cos(alpha);
-
-  p->x = new_x + origin->x;
-  p->y = y + origin->y;
-  p->z = new_z + origin->z;
-}
-
-Point* project(Point* point)
-{
-  double fov = 90.0;
-  double d = WIDTH/2*tan(fov/2);
-
-  double x = point->x - camera->x;
-  double y = point->y - camera->y;
-  double z = (point->z < camera->z + 1 ? camera->z + 1 : point->z) - camera->z;
-
-  double x_projection = (d * x) / z + WIDTH / 2;
-  double y_projection = HEIGHT / 2 - (d * y) / z;
-
-  return create_point(x_projection, y_projection, 0.0);
-}
 

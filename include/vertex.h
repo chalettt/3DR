@@ -20,12 +20,9 @@ typedef struct vertex
 } Vertex;
 
 Point* init_camera(double x, double y, double z);
-Point *move_camera(Direction d, double delta);
 Links *create_links(Vertex *vertex);
 void destroy_vertex(Vertex *vertex);
 Vertex *create_vertex(double x, double y, double z);
 void connect_vertex(Vertex *a, Vertex *b);
-void rot_x(Vertex *vertex, Point *origin, double alpha);
-Point* project(Point* point);
 
 #endif /* ! VERTEX_H */
