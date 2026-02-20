@@ -1,72 +1,104 @@
-#include "../include/visual.h"
+#include "visual.h"
 
-Vertex *handle_args(int argc, char **argv)
+Point *handle_args(int argc, char **argv)
 {
-    Vertex *origin = calloc(1, sizeof(Vertex));
-    for (int i = 1; i < argc; i++)
-    {
-        if (!strcmp(argv[i], "-x"))
-            origin->x = atoi(argv[++i]);
-        else if (!strcmp(argv[i], "-y"))
-            origin->y = atoi(argv[++i]);
-        else if (!strcmp(argv[i], "-z"))
-            origin->z = atoi(argv[++i]);
-    }
-    return origin;
+  Point *origin = malloc(sizeof(Point));
+  for (int i = 1; i < argc; i++)
+  {
+    if (!strcmp(argv[i], "-x"))
+      origin->x = atoi(argv[++i]);
+    else if (!strcmp(argv[i], "-y"))
+      origin->y = atoi(argv[++i]);
+    else if (!strcmp(argv[i], "-z"))
+      origin->z = atoi(argv[++i]);
+  }
+  return origin;
 }
 
 int main(int argc, char **argv)
 {
-    if (sdl_init())
-        return 1;
+  if (sdl_init())
+    return 1;
 
-    // Creating the window and renderer.
-    SDL_Window *window = create_window(WIDTH, HEIGHT);
-    SDL_Renderer *renderer = create_renderer(window);
+  // Creating the window and renderer.
+  SDL_Window *window = create_window(WIDTH, HEIGHT);
+  SDL_Renderer *renderer = create_renderer(window);
 
-    unsigned running = 1;
-    SDL_Event event;
+  unsigned running = 1;
+  SDL_Event event;
 
-    // Creating the rotating cube.
-    Vertex *origin = handle_args(argc, argv);
-    Cube *cube = create_cube(CUBE_SIZE, origin);
+  // Creating the rotating cube.
+  Point *origin = handle_args(argc, argv);
+  Cube *cube = create_cube(CUBE_SIZE, origin);
+  init_camera(0, 0, 0);
 
-    // Rotating speed.
-    double alpha = 0.025;
+  // Rotation speed.
+  double alpha = 0.025;
+  // Movement speed.
+  double delta = 2;
 
-    // Window loop
-    while (running)
+  // Window loop
+  while (running)
+  {
+    while (SDL_PollEvent(&event))
     {
-        while (SDL_PollEvent(&event))
-        {
-            // If the window gets terminated.
-            if (event.type == SDL_QUIT)
-            {
-                // Exit the loop;
-                running = 0;
-            }
-        }
-
-        // Clears the window.
-        SDL_SetRenderDrawColor(renderer, BLACK, 255);
-        SDL_RenderClear(renderer);
-
-        // Draws the rotated cube in red.
-        SDL_SetRenderDrawColor(renderer, RED, 255);
-        rot_cube_x(cube, cube->center, alpha);
-        draw_cube(renderer, cube);
-        SDL_RenderPresent(renderer);
-
-        // 60 frames a second.
-        SDL_Delay(1000 / 60);
+      switch (event.type)
+      {
+        // If the window gets terminated.
+        case SDL_QUIT:
+          // Exit the loop;
+          running = 0;
+          break;
+        default:
+          break;
+      }
     }
 
-    // Properly quits sdl.
-    sdl_quit(renderer, window);
+    const Uint8 *state = SDL_GetKeyboardState(NULL);
 
-    // Frees everything
-    destroy_cube(cube);
-    destroy_vertex(origin);
+    if (state[SDL_SCANCODE_A] || state[SDL_SCANCODE_LEFT])
+      move_camera(LEFT, delta);
 
-    return 0;
+    if (state[SDL_SCANCODE_D] || state[SDL_SCANCODE_RIGHT])
+      move_camera(RIGHT, delta);
+
+    if (state[SDL_SCANCODE_W] || state[SDL_SCANCODE_UP])
+      move_camera(FRONT, delta);
+
+    if (state[SDL_SCANCODE_S] || state[SDL_SCANCODE_DOWN])
+      move_camera(BACK, delta);
+
+    if (state[SDL_SCANCODE_SPACE])
+      move_camera(UP, delta);
+
+    if (state[SDL_SCANCODE_LCTRL])
+      move_camera(DOWN, delta);
+
+    if (state[SDL_SCANCODE_LSHIFT])
+      delta = 5;
+    else 
+      delta = 2;
+
+    // Clears the window.
+    SDL_SetRenderDrawColor(renderer, BLACK, 255);
+    SDL_RenderClear(renderer);
+
+    // Draws the rotated cube in red.
+    SDL_SetRenderDrawColor(renderer, RED, 255);
+    rot_cube_x(cube, cube->position, alpha);
+    draw_cube(renderer, cube);
+    SDL_RenderPresent(renderer);
+
+    // 60 frames a second.
+    SDL_Delay(1000 / 60);
+  }
+
+  // Properly quits sdl.
+  sdl_quit(renderer, window);
+
+  // Frees everything
+  destroy_cube(cube);
+  free(origin);
+
+  return 0;
 }
