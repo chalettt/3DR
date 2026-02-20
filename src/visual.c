@@ -1,14 +1,21 @@
 #include "visual.h"
+#include "point.h"
 
 // Draws each links of a vertex onto a renderer.
 void draw_links(SDL_Renderer *renderer, Vertex *vertex_a)
 {
   Links *links = vertex_a->links;
   Point *projection_a = project(vertex_a->position);
+  if (!projection_a)
+    return;
+  
   while (links)
   {
     Vertex *vertex_b = links->vertex;
     Point *projection_b = project(vertex_b->position);
+    if (!projection_b)
+      return;
+
     SDL_RenderDrawLine(renderer, projection_a->x, projection_a->y, projection_b->x, projection_b->y);
 
     free(projection_b);
