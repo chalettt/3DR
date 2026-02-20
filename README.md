@@ -11,3 +11,11 @@ cd RotCube && make
 ```sh
 ./cube
 ```
+
+### Flags
+-  -x Change the x coordinate of the origin
+-  -y Change the y coordinate of the origin
+-  -z Change the z coordinate of the origin
+```sh
+./cube -x 67 -y 67 -z 67
+```
