@@ -4,6 +4,7 @@
 Point *handle_args(int argc, char **argv)
 {
   Point *origin = malloc(sizeof(Point));
+  origin->z = 500;
   for (int i = 1; i < argc; i++)
   {
     if (!strcmp(argv[i], "-x"))
@@ -99,7 +100,6 @@ int main(int argc, char **argv)
     SDL_RenderClear(renderer);
 
     // Draws the rotated cube in red.
-    SDL_SetRenderDrawColor(renderer, RED, 255);
     rot_cube_y(cube, cube->position, alpha);
     draw_cube(renderer, cube);
     SDL_RenderPresent(renderer);
