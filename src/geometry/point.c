@@ -119,8 +119,6 @@ Point *project(Point *point)
     return create_point(projection_x, projection_y, z);
 }
 
-// Rotates a point by an angle alpha along the Z axis according to the origin
-// point.
 Point *rotate_point_z(Point *point, Point *origin, double alpha)
 {
     double x = point->x - origin->x;
@@ -137,8 +135,6 @@ Point *rotate_point_z(Point *point, Point *origin, double alpha)
     return point;
 }
 
-// Rotates a point by an angle alpha along the Y axis according to the origin
-// point.
 Point *rotate_point_y(Point *point, Point *origin, double alpha)
 {
     double x = point->x - origin->x;
@@ -155,8 +151,6 @@ Point *rotate_point_y(Point *point, Point *origin, double alpha)
     return point;
 }
 
-// Rotates a point by an angle alpha along the X axis according to the origin
-// point.
 Point *rotate_point_x(Point *point, Point *origin, double alpha)
 {
     double x = point->x - origin->x;

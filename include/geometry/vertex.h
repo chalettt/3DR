@@ -28,14 +28,6 @@ typedef struct vertex
 } Vertex;
 
 /**
- * @brief Creates a new node of links.
- *
- * @param vertex The vertex to create the links for.
- * @return The created links.
- */
-Links *create_links(Vertex *vertex);
-
-/**
  * @brief Destroys a vertex.
  *
  * @param vertex the vertex to destroy.

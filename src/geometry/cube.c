@@ -1,6 +1,5 @@
 #include "geometry/cube.h"
 
-// Returns an array of vertices representing a cube.
 Cube *create_cube(int size, Point *origin)
 {
     // Creates each point.
@@ -22,7 +21,7 @@ Cube *create_cube(int size, Point *origin)
     Vertex *h =
         create_vertex(-size + origin->x, size + origin->y, -size + origin->z);
 
-    // Creates all the edges
+    // Creates all the edges.
     connect_vertex(a, b);
     connect_vertex(b, c);
     connect_vertex(c, d);
@@ -64,7 +63,6 @@ Cube *create_cube(int size, Point *origin)
     return cube;
 }
 
-// Rotates each vertex of the cube.
 void rot_cube_y(Cube *cube, Point *origin, double alpha)
 {
     for (int i = 0; i < 8; i++)
@@ -73,7 +71,14 @@ void rot_cube_y(Cube *cube, Point *origin, double alpha)
     }
 }
 
-// Destroys each vertex of a cube.
+void rot_cube_x(Cube *cube, Point *origin, double alpha)
+{
+    for (int i = 0; i < 8; i++)
+    {
+        rotate_point_x(cube->vertices[i]->position, origin, alpha);
+    }
+}
+
 void destroy_cube(Cube *cube)
 {
     for (int i = 0; i < 8; i++)

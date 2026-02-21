@@ -52,7 +52,7 @@ int main(int argc, char **argv)
             {
             // If the window gets terminated.
             case SDL_QUIT:
-                // Exit the loop;
+                // Exit the loop.
                 running = 0;
                 break;
             case SDL_MOUSEMOTION: {
