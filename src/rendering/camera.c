@@ -38,7 +38,6 @@ Point *move_camera(Direction d, double delta)
     forward = *vector_normalize(&forward);
     Point world_up = { 0, 1, 0 };
     Point right = *vector_normalize(vector_cross(&world_up, &forward));
-    Point up = *vector_normalize(vector_cross(&forward, &right));
     Point move;
 
     switch (d)
@@ -50,10 +49,10 @@ Point *move_camera(Direction d, double delta)
         move = *scalar_product(&right, delta);
         break;
     case UP:
-        move = *scalar_product(&up, delta);
+        move = *scalar_product(&world_up, delta);
         break;
     case DOWN:
-        move = *scalar_product(&up, -delta);
+        move = *scalar_product(&world_up, -delta);
         break;
     case FRONT:
         move = *scalar_product(&forward, delta);
