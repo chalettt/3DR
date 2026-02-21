@@ -1,5 +1,5 @@
-#include "camera.h"
-#include "visual.h"
+#include "rendering/camera.h"
+#include "rendering/visual.h"
 
 Point *handle_args(int argc, char **argv)
 {

@@ -1,6 +1,6 @@
 #include <math.h>
 
-#include "point.h"
+#include "geometry/point.h"
 
 Point *vector_normalize(Point *p)
 {

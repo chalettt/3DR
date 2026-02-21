@@ -1,10 +1,9 @@
-#include "vertex.h"
+#include "geometry/vertex.h"
+#include "rendering/sdl_manager.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <stdlib.h>
-
-#include "sdl_manager.h"
 
 // Creates a link and initializes each component.
 Links *create_links(Vertex *vertex)

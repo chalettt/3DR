@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-#include "debug.h"
+#include "utils/debug.h"
 
 // Macros for default width, height and depth.
 #define WIDTH 500

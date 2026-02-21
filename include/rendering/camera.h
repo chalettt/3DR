@@ -1,7 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "point.h"
+#include "geometry/point.h"
 
 typedef struct camera
 {

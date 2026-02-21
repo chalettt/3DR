@@ -1,6 +1,5 @@
-#include "visual.h"
-
-#include "point.h"
+#include "rendering/visual.h"
+#include "geometry/point.h"
 
 // Draws each links of a vertex onto a renderer.
 void draw_links(SDL_Renderer *renderer, Vertex *vertex_a)

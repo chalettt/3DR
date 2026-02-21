@@ -1,12 +1,11 @@
-#include "point.h"
+#include "geometry/point.h"
+#include "rendering/camera.h"
+#include "utils/debug.h"
+#include "rendering/sdl_manager.h"
+#include "geometry/vector.h"
 
 #include <math.h>
 #include <stdlib.h>
-
-#include "camera.h"
-#include "debug.h"
-#include "sdl_manager.h"
-#include "vector.h"
 
 Point *create_point(double x, double y, double z)
 {

@@ -1,8 +1,8 @@
 #ifndef VERTEX_H
 #define VERTEX_H
 
-#include "point.h"
-#include "sdl_manager.h"
+#include "geometry/point.h"
+#include "rendering/sdl_manager.h"
 
 // Macro for the default cube size.
 #define CUBE_SIZE 75

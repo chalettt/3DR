@@ -1,9 +1,8 @@
-#include "sdl_manager.h"
+#include "rendering/sdl_manager.h"
+#include "utils/debug.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-
-#include "debug.h"
 
 // Initialize SDL
 int sdl_init()

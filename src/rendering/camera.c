@@ -1,10 +1,9 @@
-#include "camera.h"
+#include "rendering/camera.h"
+#include "utils/debug.h"
+#include "geometry/vector.h"
 
 #include <math.h>
 #include <stdlib.h>
-
-#include "debug.h"
-#include "vector.h"
 
 Camera *camera = NULL;
 

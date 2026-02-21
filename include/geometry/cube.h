@@ -1,7 +1,7 @@
 #ifndef CUBE_H
 #define CUBE_H
 
-#include "vertex.h"
+#include "geometry/vertex.h"
 
 typedef struct cube
 {

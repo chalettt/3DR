@@ -1,4 +1,4 @@
-#include "cube.h"
+#include "geometry/cube.h"
 
 // Returns an array of vertices representing a cube.
 Cube *create_cube(int size, Point *origin)
