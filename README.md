@@ -1,4 +1,4 @@
-# Better Rotating cube
+# Better Rotating cube (and greener)
 This project is a cube
 
 ## Installation
