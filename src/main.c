@@ -129,7 +129,7 @@ int main(int argc, char **argv)
     SDL_RenderPresent(renderer);
 
     // 60 frames a second.
-    SDL_Delay(1000 / 60);
+    SDL_Delay(1000 / 175);
   }
 
   // Properly quits sdl.
