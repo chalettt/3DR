@@ -64,13 +64,20 @@ int main(int argc, char **argv)
             rotate_camera_y(alpha, mouse_delta_x/10);
           if (mouse_delta_y != 0)
             rotate_camera_x(alpha, -mouse_delta_y/10);
+          break;
         }
+        case SDL_MOUSEBUTTONDOWN:
+          SDL_SetRelativeMouseMode(SDL_TRUE);
+          break;
         default:
           break;
       }
     }
 
     const Uint8 *state = SDL_GetKeyboardState(NULL);
+
+    if (state[SDL_SCANCODE_ESCAPE])
+      SDL_SetRelativeMouseMode(SDL_FALSE);
 
     if (state[SDL_SCANCODE_A] || state[SDL_SCANCODE_LEFT])
       move_camera(LEFT, delta);
