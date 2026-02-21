@@ -5,8 +5,8 @@
 
 typedef struct cube
 {
-  Vertex **vertices;
-  Point *position;
+    Vertex **vertices;
+    Point *position;
 } Cube;
 
 Cube *create_cube(int size, Point *origin);

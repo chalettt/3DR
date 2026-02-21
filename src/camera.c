@@ -35,39 +35,39 @@ Point get_forward()
 
 Point *move_camera(Direction d, double delta)
 {
-  Point forward = get_forward();
-  forward = *vector_normalize(&forward);
-  Point world_up = { 0, 1, 0 };
-  Point right = *vector_normalize(vector_cross(&world_up, &forward));
-  Point up = *vector_normalize(vector_cross(&forward, &right));
-  Point move;
+    Point forward = get_forward();
+    forward = *vector_normalize(&forward);
+    Point world_up = { 0, 1, 0 };
+    Point right = *vector_normalize(vector_cross(&world_up, &forward));
+    Point up = *vector_normalize(vector_cross(&forward, &right));
+    Point move;
 
-  switch (d)
-  {
+    switch (d)
+    {
     case LEFT:
-      move = *scalar_product(&right, -delta);
-      break;
+        move = *scalar_product(&right, -delta);
+        break;
     case RIGHT:
-      move = *scalar_product(&right, delta);
-      break;
+        move = *scalar_product(&right, delta);
+        break;
     case UP:
-      move = *scalar_product(&up, delta);
-      break;
+        move = *scalar_product(&up, delta);
+        break;
     case DOWN:
-      move = *scalar_product(&up, -delta);
-      break;
+        move = *scalar_product(&up, -delta);
+        break;
     case FRONT:
-      move = *scalar_product(&forward, delta);
-      break;
+        move = *scalar_product(&forward, delta);
+        break;
     case BACK:
-      move = *scalar_product(&forward, -delta);
-      break;
-  }
+        move = *scalar_product(&forward, -delta);
+        break;
+    }
 
-  add_point(camera->position, &move);
-  add_point(camera->look_ahead, &move);
+    add_point(camera->position, &move);
+    add_point(camera->look_ahead, &move);
 
-  return NULL;
+    return NULL;
 }
 
 Point *rotate_camera_x(double alpha, double delta)

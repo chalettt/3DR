@@ -8,4 +8,3 @@ Point *vector_cross(Point *a, Point *b);
 double dot_product(Point *a, Point *b);
 
 #endif /* VECTOR_H */
-

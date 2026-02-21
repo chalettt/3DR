@@ -5,10 +5,10 @@
 
 typedef struct camera
 {
-  Point *position;
-  Point *look_ahead;
-  double yaw;
-  double pitch;
+    Point *position;
+    Point *look_ahead;
+    double yaw;
+    double pitch;
 } Camera;
 
 extern Camera *camera;
@@ -18,4 +18,3 @@ Point *rotate_camera_x(double alpha, double delta);
 Point *rotate_camera_y(double alpha, double delta);
 
 #endif /* CAMERA_H */
-
