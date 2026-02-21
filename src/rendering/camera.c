@@ -7,7 +7,7 @@
 
 Camera *camera = NULL;
 
-Point *init_camera(double x, double y, double z)
+Camera *init_camera(double x, double y, double z)
 {
     camera = malloc(sizeof(Camera));
     if (!camera)
@@ -18,7 +18,7 @@ Point *init_camera(double x, double y, double z)
     camera->yaw = 0.0;
     camera->pitch = 0.0;
 
-    return camera->position;
+    return camera;
 }
 
 Point get_forward()
