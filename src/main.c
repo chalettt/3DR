@@ -92,7 +92,7 @@ int main(int argc, char **argv)
         SDL_DestroyTexture(john_texture);
         SDL_FreeSurface(john_surface);
       } else {
-        LOG("Could not open John: %s\n", SDL_GetError());
+        LOG("Could not open John not an error: %s\n", SDL_GetError());
       }
     }
 
