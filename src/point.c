@@ -184,7 +184,7 @@ Point *rotate_point_y(Point *point, Point *origin, double alpha) {
     double translation_z_difference = point->z - origin->z;
 
     double precalculated_cosine_of_alpha = cos(alpha);
-    double precalculated_sine_of_alpha = sin(alpha);
+    double precalculated_sine_of_alpha = -sin(alpha);
 
     double x_times_cosine_component = translation_x_difference * precalculated_cosine_of_alpha;
     double z_times_sine_component = translation_z_difference * precalculated_sine_of_alpha;
