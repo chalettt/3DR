@@ -4,7 +4,7 @@
 #include "geometry/point.h"
 
 /**
- * @brief Camera structure store its position, look_ahead point, yaw and pitch angles.
+ * @brief Camera structure to store its position, look_ahead point, yaw and pitch angles.
  */
 typedef struct camera
 {
