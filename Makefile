@@ -6,7 +6,7 @@ SRC_DIR = src
 
 SRC = $(SRC_DIR)/main.c $(wildcard $(SRC_DIR)/*/*.c)
 OBJ = $(SRC:.c=.o) 
-TARGET = cube
+TARGET = 3DR
 
 .PHONY: cube clean all
 
