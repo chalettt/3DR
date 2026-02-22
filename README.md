@@ -3,7 +3,7 @@ This project is the beginning of, hopefully, a full 3D renderer made in C and SD
 
 ## Installation
 ```sh
-git clone https://github.com/chalettt/RotCube.git
+git clone https://github.com/chalettt/3DR.git
 cd RotCube && make
 ```
 
