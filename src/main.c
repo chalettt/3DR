@@ -4,7 +4,6 @@
 Point *handle_args(int argc, char **argv)
 {
     Point *origin = malloc(sizeof(Point));
-    origin->z = 500;
     for (int i = 1; i < argc; i++)
     {
         if (!strcmp(argv[i], "-x"))
@@ -32,7 +31,7 @@ int main(int argc, char **argv)
     // Creating the rotating cube.
     Point *origin = handle_args(argc, argv);
     Cube *cube = create_cube(CUBE_SIZE, origin);
-    init_camera(0, 0, 0);
+    init_camera(0, 0, -500);
 
     // Rotation speed.
     double alpha = 0.025;
