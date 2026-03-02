@@ -4,52 +4,31 @@
 #include <SDL2/SDL_render.h>
 #include <stdlib.h>
 
+#include "geometry/face.h"
+#include "geometry/model.h"
 #include "geometry/point.h"
-#include "geometry/triangle.h"
 #include "geometry/vector.h"
 #include "rendering/camera.h"
 #include "rendering/sdl_manager.h"
 
-void draw_links(SDL_Renderer *renderer, Vertex *vertex_a)
+void draw_face(SDL_Renderer *renderer, Face *face)
 {
-    Links *links = vertex_a->links;
-    Point *projection_a = project(vertex_a->position);
-    if (!projection_a)
-        return;
+    Point *projection_a = project(face->points[0]);
+    Point *projection_b = project(face->points[1]);
+    Point *projection_c = project(face->points[2]);
+    Point *projection_d = NULL;
+    if (face->points[3])
+        projection_d = project(face->points[3]);
 
-    while (links)
-    {
-        Vertex *vertex_b = links->vertex;
-        Point *projection_b = project(vertex_b->position);
-
-        if (!projection_b)
-        {
-            free(projection_a);
-            return;
-        }
-
-        SDL_RenderDrawLine(renderer, projection_a->x, projection_a->y,
-                           projection_b->x, projection_b->y);
-
-        free(projection_b);
-        links = links->next;
-    }
-    free(projection_a);
-}
-
-void draw_triangle(SDL_Renderer *renderer, Triangle *triangle)
-{
-    Point *projection_a = project(triangle->points[0]);
-    Point *projection_b = project(triangle->points[1]);
-    Point *projection_c = project(triangle->points[2]);
-    if (!projection_a || !projection_b || !projection_c)
+    if (!projection_a || !projection_b || !projection_c
+        || (face->points[3] && !projection_d))
         goto exit;
 
     Point world_light = { 0, -1, 1 };
     world_light = vector_normalize(&world_light);
     world_light = *scalar_product(&world_light, -1);
 
-    double intensity = dot_product(triangle->normal, &world_light);
+    double intensity = dot_product(face->normal, &world_light);
     intensity = intensity < 0 ? 0 : intensity;
 
     double ambient = 0.1;
@@ -62,46 +41,47 @@ void draw_triangle(SDL_Renderer *renderer, Triangle *triangle)
     color.g *= intensity;
     color.b *= intensity;
 
-    SDL_Vertex vertices[3] = {
-        { { projection_a->x, projection_a->y }, color, { 0.0f, 0.0f } },
-        { { projection_b->x, projection_b->y }, color, { 0.0f, 0.0f } },
-        { { projection_c->x, projection_c->y }, color, { 0.0f, 0.0f } },
-    };
+    if (!projection_d)
+    {
+        SDL_Vertex vertices[3] = {
+            { { projection_a->x, projection_a->y }, color, { 0.0f, 0.0f } },
+            { { projection_b->x, projection_b->y }, color, { 0.0f, 0.0f } },
+            { { projection_c->x, projection_c->y }, color, { 0.0f, 0.0f } },
+        };
 
-    SDL_RenderGeometry(renderer, NULL, vertices, 3, NULL, 0);
+        SDL_RenderGeometry(renderer, NULL, vertices, 3, NULL, 0);
+    }
+    else
+    {
+        SDL_Vertex vertices[4] = {
+            { { projection_a->x, projection_a->y }, color, { 0.0f, 0.0f } },
+            { { projection_b->x, projection_b->y }, color, { 0.0f, 0.0f } },
+            { { projection_c->x, projection_c->y }, color, { 0.0f, 0.0f } },
+            { { projection_d->x, projection_d->y }, color, { 0.0f, 0.0f } },
+        };
+        const int indices[] = { 0, 1, 2, 2, 3, 0 };
+
+        SDL_RenderGeometry(renderer, NULL, vertices, 4, indices, 6);
+    }
 
 exit:
     free(projection_a);
     free(projection_b);
     free(projection_c);
+    free(projection_d);
 }
 
-void draw_cube(SDL_Renderer *renderer, Cube *cube)
+void draw_model(SDL_Renderer *renderer, Model *model)
 {
-    int triangles[36] = { 0, 1, 2, 0, 2, 3,
+    // Point *origin = model->origin;
+    Face **faces = model->faces;
 
-                          5, 4, 7, 5, 7, 6,
-
-                          4, 0, 3, 4, 3, 7,
-
-                          1, 5, 6, 1, 6, 2,
-
-                          3, 2, 6, 3, 6, 7,
-
-                          4, 5, 1, 4, 1, 0 };
-
-    for (size_t i = 0; i < 35; i += 3)
+    for (size_t i = 0; faces[i]; i++)
     {
-        Triangle *t =
-            create_triangle(cube->vertices[triangles[i]]->position,
-                            cube->vertices[triangles[i + 1]]->position,
-                            cube->vertices[triangles[i + 2]]->position);
-        Point cp = *camera->position;
-        sub_point(&cp, t->points[0]);
-        if (dot_product(&cp, t->normal) > 0)
-        {
-            draw_triangle(renderer, t);
-        }
-        destroy_triangle(t);
+        Face *face = faces[i];
+        Point rel = *(faces[i]->points[0]);
+        sub_point(&rel, camera->position);
+        if (dot_product(face->normal, &rel) < 0)
+            draw_face(renderer, face);
     }
 }

@@ -1,5 +1,6 @@
-#include "geometry/cube.h"
+#include "geometry/model.h"
 #include "rendering/camera.h"
+#include "rendering/sdl_manager.h"
 #include "rendering/visual.h"
 
 Point *handle_args(int argc, char **argv)
@@ -29,10 +30,11 @@ int main(int argc, char **argv)
     unsigned running = 1;
     SDL_Event event;
 
-    // Creating the rotating cube.
+    char *obj_path = argv[1];
+    Model *model = load_model(obj_path);
+
     Point *origin = handle_args(argc, argv);
-    Cube *cube = create_cube(CUBE_SIZE, origin);
-    init_camera(0, 0, -500);
+    init_camera(0, 0, 0);
 
     // Rotation speed.
     double alpha = 0.025;
@@ -105,9 +107,9 @@ int main(int argc, char **argv)
         SDL_SetRenderDrawColor(renderer, BLACK, 255);
         SDL_RenderClear(renderer);
 
-        // Draws the rotated cube in red.
-        rot_cube_y(cube, cube->position, alpha);
-        draw_cube(renderer, cube);
+        draw_model(renderer, model);
+        rotate_model(model, alpha);
+
         SDL_RenderPresent(renderer);
 
         // 60 frames a second.
@@ -118,7 +120,7 @@ int main(int argc, char **argv)
     sdl_quit(renderer, window);
 
     // Frees everything
-    destroy_cube(cube);
+    destroy_model(model);
     free(origin);
 
     return 0;

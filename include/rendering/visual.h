@@ -1,22 +1,17 @@
 #ifndef VISUAL_H
 #define VISUAL_H
 
-#include "geometry/cube.h"
+#include <SDL2/SDL.h>
+
+#include "geometry/model.h"
 
 /**
- * @brief Draws each links of a vertex onto screen.
+ * @brief Draws an obj on screen.
  *
  * @param renderer The renderer to draw on.
- * @param vertex The vertex from which links will be drawn.
+ * @param vertices The vertices of the model.
+ * @param faces The faces of the model with indices relative to the vertices.
  */
-void draw_links(SDL_Renderer *renderer, Vertex *vertex);
-
-/**
- * @brief Draws a cube on screen.
- *
- * @param renderer The renderer to draw on.
- * @param vertex The cube to be drawn.
- */
-void draw_cube(SDL_Renderer *renderer, Cube *cube);
+void draw_model(SDL_Renderer *renderer, Model *model);
 
 #endif /* ! VISUAL_H */
