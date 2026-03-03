@@ -115,7 +115,6 @@ Model *load_model(char *path, Point *origin)
         while (faces[i][face_vertex_count])
             face_vertex_count++;
 
-        LOG("%ld", face_vertex_count);
         Point **points = calloc(face_vertex_count + 1, sizeof(Point *));
         for (size_t j = 0; j < face_vertex_count; j++)
         {
