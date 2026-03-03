@@ -7,6 +7,7 @@ It rotates the model and applies face lighting.
 git clone https://github.com/chalettt/3DR.git
 cd 3DR && make
 ```
+Do not forget to install SDL2 through your favorite package manager.
 
 ## Usage
 ```sh
@@ -26,3 +27,9 @@ cd 3DR && make
 - Space and Left Control to respectively go up and down.
 - Left Shift to go faster.
 - Mouse movements as camera rotation.
+
+## Documentation
+Each header file contains a doxygen documentation, you can run the following command to generate the full documentation (which will generate in /docs):
+```sh
+make doc
+```
