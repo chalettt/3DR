@@ -18,6 +18,9 @@ $(TARGET): $(OBJ)
 %.o: %.c
 	$(CC) $(CFLAGS) -c $^ -o $@
 
+doc:
+	doxygen Doxyfile
+
 debug: CFLAGS+=-g -fsanitize=address
 debug: LDFLAGS+=-g
 debug: all
