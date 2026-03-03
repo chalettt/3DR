@@ -1,3 +1,5 @@
+#include <iso646.h>
+
 #include "geometry/model.h"
 #include "rendering/camera.h"
 #include "rendering/sdl_manager.h"
@@ -6,7 +8,7 @@
 Point *handle_args(int argc, char **argv)
 {
     Point *origin = malloc(sizeof(Point));
-    for (int i = 1; i < argc; i++)
+    for (int i = 2; i < argc; i++)
     {
         if (!strcmp(argv[i], "-x"))
             origin->x = atoi(argv[++i]);
@@ -30,15 +32,17 @@ int main(int argc, char **argv)
     unsigned running = 1;
     SDL_Event event;
 
+    Point *origin = handle_args(argc, argv);
+
     char *obj_path = argv[1];
-    Model *model = load_model(obj_path);
+    Model *model = load_model(obj_path, origin);
     if (!model)
     {
+        free(origin);
         sdl_quit(renderer, window);
         return 1;
     }
 
-    Point *origin = handle_args(argc, argv);
     init_camera(0, 0, 0);
 
     // Rotation speed.
@@ -126,7 +130,6 @@ int main(int argc, char **argv)
 
     // Frees everything
     destroy_model(model);
-    free(origin);
 
     return 0;
 }

@@ -46,7 +46,7 @@ static int *get_face(char *line, bool is_normal)
     return face;
 }
 
-Model *load_model(char *path)
+Model *load_model(char *path, Point *origin)
 {
     FILE *obj = fopen(path, "r");
     if (!obj)
@@ -99,6 +99,7 @@ Model *load_model(char *path)
         return NULL;
     }
 
+    model->origin = origin;
     model->faces = calloc(FACE_COUNT, sizeof(Face *));
     for (size_t i = 0; faces[i]; i++)
     {
@@ -117,9 +118,13 @@ Model *load_model(char *path)
                 create_point(vertices[faces[i][3]][0], vertices[faces[i][3]][1],
                              vertices[faces[i][3]][2]);
 
+        add_point(points[0], origin);
+        add_point(points[1], origin);
+        add_point(points[2], origin);
+        if (points[3])
+            add_point(points[3], origin);
         model->faces[i] = create_face(points);
     }
-    model->origin = create_point(0, 0, 0);
 
     for (size_t i = 0; faces[i]; i++)
         free(faces[i]);

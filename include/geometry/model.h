@@ -12,7 +12,7 @@ typedef struct model
     Point *origin;
 } Model;
 
-Model *load_model(char *path);
+Model *load_model(char *path, Point *origin);
 void destroy_model(Model *model);
 void rotate_model(Model *model, double alpha);
 
