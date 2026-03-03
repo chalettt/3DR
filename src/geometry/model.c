@@ -12,7 +12,8 @@
 
 static double *get_vertex(char *line, bool is_normal)
 {
-    double *vertex = calloc(4, sizeof(double));
+    double *vertex = malloc(4 * sizeof(double));
+    vertex[3] = 0;
 
     size_t token_index = 0;
     char *token = strtok(line + 2 + (is_normal ? 1 : 0), " ");
@@ -29,7 +30,7 @@ static double *get_vertex(char *line, bool is_normal)
 static int *get_face(char *line, bool is_normal)
 {
     size_t vertex_count = 4;
-    int *face = calloc(vertex_count + 1, sizeof(int));
+    int *face = malloc((vertex_count + 1) * sizeof(int));
 
     size_t token_index = 0;
     char *token = strtok(line + 2, " ");
@@ -39,8 +40,6 @@ static int *get_face(char *line, bool is_normal)
         {
             vertex_count *= 2;
             face = realloc(face, (vertex_count + 1) * sizeof(int));
-            face[vertex_count] = '\0';
-            memset(face + token_index, 0, vertex_count - token_index + 1);
         }
         if (is_normal)
             for (size_t i = 0; i < 2; i++)
@@ -48,6 +47,7 @@ static int *get_face(char *line, bool is_normal)
 
         face[token_index] = strtol(token, NULL, 10);
         token_index++;
+        face[token_index] = 0;
         token = strtok(NULL, " ");
     }
 
@@ -65,10 +65,12 @@ Model *load_model(char *path, Point *origin)
 
     LOG("File opened, parsing commencing with file: %s", path);
 
-    int **faces = calloc(FACE_COUNT, sizeof(int *));
-    double **vertices = calloc(VERTEX_COUNT, sizeof(double *));
-    // double **normals = calloc(VERTEX_COUNT, sizeof(double *));
-    // int **face_normals = calloc(FACE_COUNT, sizeof(int *));
+    size_t buffer_size = BUFFER_SIZE;
+    int **faces = malloc((buffer_size + 1) * sizeof(int *));
+    double **vertices = malloc((buffer_size + 1) * sizeof(double *));
+    vertices[0] = 0;
+    // double **normals = calloc(BUFFER_SIZE, sizeof(double *));
+    // int **face_normals = calloc(BUFFER_SIZE, sizeof(int *));
 
     char *line = NULL;
     size_t size = 0;
@@ -80,6 +82,12 @@ Model *load_model(char *path, Point *origin)
     ssize_t nread;
     while ((nread = getline(&line, &size, obj)) != -1)
     {
+        if (vertex_count >= buffer_size || face_count >= buffer_size)
+        {
+            buffer_size *= 2;
+            faces = realloc(faces, (buffer_size + 1) * sizeof(int *));
+            vertices = realloc(vertices, (buffer_size + 1) * sizeof(double *));
+        }
         if (line[0] == 'v')
         {
             if (line[1] == 'n')
@@ -87,11 +95,15 @@ Model *load_model(char *path, Point *origin)
                 // normals[normal_count++] = get_vertex(line, true);
             }
             else if (line[1] == ' ')
+            {
                 vertices[vertex_count++] = get_vertex(line, false);
+                vertices[vertex_count] = 0;
+            }
         }
         else if (line[0] == 'f')
         {
             faces[face_count++] = get_face(line, false);
+            faces[face_count] = 0;
             // face_normals[face_normal_count++] = get_face(line, true);
         }
         else
@@ -108,14 +120,16 @@ Model *load_model(char *path, Point *origin)
     }
 
     model->origin = origin;
-    model->faces = calloc(FACE_COUNT, sizeof(Face *));
+    model->faces = malloc((face_count + 1) * sizeof(Face *));
+    model->faces[face_count] = 0;
     for (size_t i = 0; faces[i]; i++)
     {
         size_t face_vertex_count = 0;
         while (faces[i][face_vertex_count])
             face_vertex_count++;
 
-        Point **points = calloc(face_vertex_count + 1, sizeof(Point *));
+        Point **points = malloc((face_vertex_count + 1) * sizeof(Point *));
+        points[face_vertex_count] = 0;
         for (size_t j = 0; j < face_vertex_count; j++)
         {
             points[j] = create_point(vertices[faces[i][j] - 1][0],

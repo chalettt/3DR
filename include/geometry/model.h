@@ -4,14 +4,9 @@
 #include "geometry/face.h"
 
 /**
- * @brief Default face count of models.
+ * @brief Default buffer size for retrieving data from wavefront files.
  */
-#define FACE_COUNT 32768
-
-/**
- * @brief Default vertex count of models.
- */
-#define VERTEX_COUNT 32768
+#define BUFFER_SIZE 1024
 
 /**
  * @brief Structure to hold data relative to the loaded model.
