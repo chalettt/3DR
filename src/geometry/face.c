@@ -4,6 +4,7 @@
 
 #include "geometry/point.h"
 #include "geometry/vector.h"
+#include "utils/debug.h"
 
 Point *get_face_normal(Face *face)
 {
@@ -25,6 +26,9 @@ Face *create_face(Point **points)
         return NULL;
 
     face->points = points;
+    LOG("face:");
+    for (size_t i = 0; points[i]; i++)
+        dump_point(points[i]);
     face->normal = get_face_normal(face);
 
     return face;

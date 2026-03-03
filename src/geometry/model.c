@@ -28,17 +28,25 @@ static double *get_vertex(char *line, bool is_normal)
 
 static int *get_face(char *line, bool is_normal)
 {
-    int *face = calloc(5, sizeof(int));
+    size_t vertex_count = 4;
+    int *face = calloc(vertex_count + 1, sizeof(int));
 
     size_t token_index = 0;
     char *token = strtok(line + 2, " ");
-    while (token && token_index < 4)
+    while (token)
     {
+        if (token_index >= vertex_count)
+        {
+            vertex_count *= 2;
+            face = realloc(face, (vertex_count + 1) * sizeof(int));
+            face[vertex_count] = '\0';
+            memset(face + token_index, 0, vertex_count - token_index + 1);
+        }
         if (is_normal)
             for (size_t i = 0; i < 2; i++)
                 token = strchr(token, '/') + 1;
 
-        face[token_index] = strtol(token, NULL, 10) - 1;
+        face[token_index] = strtol(token, NULL, 10);
         token_index++;
         token = strtok(NULL, " ");
     }
@@ -103,26 +111,20 @@ Model *load_model(char *path, Point *origin)
     model->faces = calloc(FACE_COUNT, sizeof(Face *));
     for (size_t i = 0; faces[i]; i++)
     {
-        Point **points = calloc(5, sizeof(Point *));
-        points[0] =
-            create_point(vertices[faces[i][0]][0], vertices[faces[i][0]][1],
-                         vertices[faces[i][0]][2]);
-        points[1] =
-            create_point(vertices[faces[i][1]][0], vertices[faces[i][1]][1],
-                         vertices[faces[i][1]][2]);
-        points[2] =
-            create_point(vertices[faces[i][2]][0], vertices[faces[i][2]][1],
-                         vertices[faces[i][2]][2]);
-        if (faces[i][3])
-            points[3] =
-                create_point(vertices[faces[i][3]][0], vertices[faces[i][3]][1],
-                             vertices[faces[i][3]][2]);
+        size_t face_vertex_count = 0;
+        while (faces[i][face_vertex_count])
+            face_vertex_count++;
 
-        add_point(points[0], origin);
-        add_point(points[1], origin);
-        add_point(points[2], origin);
-        if (points[3])
-            add_point(points[3], origin);
+        LOG("%ld", face_vertex_count);
+        Point **points = calloc(face_vertex_count + 1, sizeof(Point *));
+        for (size_t j = 0; j < face_vertex_count; j++)
+        {
+            points[j] = create_point(vertices[faces[i][j] - 1][0],
+                                     vertices[faces[i][j] - 1][1],
+                                     vertices[faces[i][j] - 1][2]);
+            add_point(points[j], origin);
+        }
+
         model->faces[i] = create_face(points);
     }
 

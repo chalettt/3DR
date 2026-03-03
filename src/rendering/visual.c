@@ -13,17 +13,6 @@
 
 void draw_face(SDL_Renderer *renderer, Face *face)
 {
-    Point *projection_a = project(face->points[0]);
-    Point *projection_b = project(face->points[1]);
-    Point *projection_c = project(face->points[2]);
-    Point *projection_d = NULL;
-    if (face->points[3])
-        projection_d = project(face->points[3]);
-
-    if (!projection_a || !projection_b || !projection_c
-        || (face->points[3] && !projection_d))
-        goto exit;
-
     Point world_light = { 0, -1, 1 };
     world_light = vector_normalize(&world_light);
     world_light = *scalar_product(&world_light, -1);
@@ -41,34 +30,42 @@ void draw_face(SDL_Renderer *renderer, Face *face)
     color.g *= intensity;
     color.b *= intensity;
 
-    if (!projection_d)
-    {
-        SDL_Vertex vertices[3] = {
-            { { projection_a->x, projection_a->y }, color, { 0.0f, 0.0f } },
-            { { projection_b->x, projection_b->y }, color, { 0.0f, 0.0f } },
-            { { projection_c->x, projection_c->y }, color, { 0.0f, 0.0f } },
-        };
+    size_t face_vertex_count = 0;
+    while (face->points[face_vertex_count])
+        face_vertex_count++;
 
-        SDL_RenderGeometry(renderer, NULL, vertices, 3, NULL, 0);
-    }
-    else
+    SDL_Vertex *vertices = malloc(face_vertex_count * sizeof(SDL_Vertex));
+    for (size_t i = 0; i < face_vertex_count; i++)
     {
-        SDL_Vertex vertices[4] = {
-            { { projection_a->x, projection_a->y }, color, { 0.0f, 0.0f } },
-            { { projection_b->x, projection_b->y }, color, { 0.0f, 0.0f } },
-            { { projection_c->x, projection_c->y }, color, { 0.0f, 0.0f } },
-            { { projection_d->x, projection_d->y }, color, { 0.0f, 0.0f } },
-        };
-        const int indices[] = { 0, 1, 2, 2, 3, 0 };
+        Point *projection = project(face->points[i]);
+        if (!projection)
+        {
+            free(vertices);
+            return;
+        }
 
-        SDL_RenderGeometry(renderer, NULL, vertices, 4, indices, 6);
+        SDL_Vertex vertex = { { projection->x, projection->y },
+                              color,
+                              { 0.0f, 0.0f } };
+        vertices[i] = vertex;
+        free(projection);
     }
 
-exit:
-    free(projection_a);
-    free(projection_b);
-    free(projection_c);
-    free(projection_d);
+    size_t index_count = (face_vertex_count - 2) * 3;
+    int *indices = malloc(index_count * sizeof(int));
+    int offset = 0;
+    for (size_t i = 0; i < index_count; i += 3)
+    {
+        indices[i] = 0;
+        indices[i + 1] = offset + 1;
+        indices[i + 2] = offset + 2;
+        offset++;
+    }
+    SDL_RenderGeometry(renderer, NULL, vertices, face_vertex_count, indices,
+                       index_count);
+
+    free(indices);
+    free(vertices);
 }
 
 void draw_model(SDL_Renderer *renderer, Model *model)
