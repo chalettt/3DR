@@ -22,18 +22,18 @@
  * @brief Logs an error in red on stderr.
  */
 #define ERROR(FORMAT, ...)                                                     \
-    fprintf(stderr, LOG_RED "cube: *** " FORMAT "\n", ##__VA_ARGS__)
+    fprintf(stderr, LOG_RED "3DR: *** " FORMAT "\n", ##__VA_ARGS__)
 
 /**
  * @brief Logs a warning in yellow on stdout.
  */
 #define WARN(FORMAT, ...)                                                      \
-    fprintf(stdout, LOG_YELLOW "cube: " FORMAT "\n", ##__VA_ARGS__)
+    fprintf(stdout, LOG_YELLOW "3DR: " FORMAT "\n", ##__VA_ARGS__)
 
 /**
  * @brief Logs a message in blue on stdout.
  */
 #define LOG(FORMAT, ...)                                                       \
-    fprintf(stdout, LOG_GREEN "cube: " FORMAT "\n", ##__VA_ARGS__)
+    fprintf(stdout, LOG_GREEN "3DR: " FORMAT "\n", ##__VA_ARGS__)
 
 #endif /* ! DEBUG_H */
