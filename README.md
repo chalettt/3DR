@@ -1,5 +1,6 @@
 # 3D Renderer
-This project is the beginning of, hopefully, a full 3D renderer made in C and SDL, for now it only renders a rotating cube and handles user input to move the camera around.
+This project is a 3D renderer made in C using SDL2, it handles user input to move the camera around and lets the user load any wavefront (.obj) files.
+It rotates the model and applies face lighting.
 
 ## Installation
 ```sh
@@ -9,7 +10,7 @@ cd 3DR && make
 
 ## Usage
 ```sh
-./cube
+./cube my_awesome_wavefront_file.obj
 ```
 
 ### Flags
@@ -17,7 +18,7 @@ cd 3DR && make
 -  -y Changes the y coordinate of the cube origin.
 -  -z Changes the z coordinate of the cube origin.
 ```sh
-./cube -x 67 -y 67 -z 67
+./cube my_awesome_wavefront_file.obj -x 67 -y 67 -z 67
 ```
 
 ### Inputs
