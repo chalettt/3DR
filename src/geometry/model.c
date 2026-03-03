@@ -1,5 +1,6 @@
 #include "geometry/model.h"
 
+#include <asm-generic/errno-base.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -37,7 +38,7 @@ static int *get_face(char *line, bool is_normal)
             for (size_t i = 0; i < 2; i++)
                 token = strchr(token, '/') + 1;
 
-        face[token_index] = strtol(token, NULL, 10);
+        face[token_index] = strtol(token, NULL, 10) - 1;
         token_index++;
         token = strtok(NULL, " ");
     }
@@ -49,7 +50,10 @@ Model *load_model(char *path)
 {
     FILE *obj = fopen(path, "r");
     if (!obj)
+    {
+        ERROR("Could not open file: %s", path);
         return NULL;
+    }
 
     LOG("File opened, parsing commencing with file: %s", path);
 
@@ -70,11 +74,11 @@ Model *load_model(char *path)
     {
         if (line[0] == 'v')
         {
-            if (line[1] == 't')
+            if (line[1] == 'n')
             {
                 // normals[normal_count++] = get_vertex(line, true);
             }
-            else
+            else if (line[1] == ' ')
                 vertices[vertex_count++] = get_vertex(line, false);
         }
         else if (line[0] == 'f')
@@ -99,19 +103,19 @@ Model *load_model(char *path)
     for (size_t i = 0; faces[i]; i++)
     {
         Point **points = calloc(5, sizeof(Point *));
-        points[0] = create_point(vertices[faces[i][0] - 1][0],
-                                 vertices[faces[i][0] - 1][1],
-                                 vertices[faces[i][0] - 1][2]);
-        points[1] = create_point(vertices[faces[i][1] - 1][0],
-                                 vertices[faces[i][1] - 1][1],
-                                 vertices[faces[i][1] - 1][2]);
-        points[2] = create_point(vertices[faces[i][2] - 1][0],
-                                 vertices[faces[i][2] - 1][1],
-                                 vertices[faces[i][2] - 1][2]);
+        points[0] =
+            create_point(vertices[faces[i][0]][0], vertices[faces[i][0]][1],
+                         vertices[faces[i][0]][2]);
+        points[1] =
+            create_point(vertices[faces[i][1]][0], vertices[faces[i][1]][1],
+                         vertices[faces[i][1]][2]);
+        points[2] =
+            create_point(vertices[faces[i][2]][0], vertices[faces[i][2]][1],
+                         vertices[faces[i][2]][2]);
         if (faces[i][3])
-            points[3] = create_point(vertices[faces[i][3] - 1][0],
-                                     vertices[faces[i][3] - 1][1],
-                                     vertices[faces[i][3] - 1][2]);
+            points[3] =
+                create_point(vertices[faces[i][3]][0], vertices[faces[i][3]][1],
+                             vertices[faces[i][3]][2]);
 
         model->faces[i] = create_face(points);
     }

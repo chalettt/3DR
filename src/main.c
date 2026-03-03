@@ -32,6 +32,11 @@ int main(int argc, char **argv)
 
     char *obj_path = argv[1];
     Model *model = load_model(obj_path);
+    if (!model)
+    {
+        sdl_quit(renderer, window);
+        return 1;
+    }
 
     Point *origin = handle_args(argc, argv);
     init_camera(0, 0, 0);
