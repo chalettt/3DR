@@ -14,11 +14,11 @@ cd 3DR && make
 ```
 
 ### Flags
--  -x Changes the x coordinate of the cube origin.
--  -y Changes the y coordinate of the cube origin.
--  -z Changes the z coordinate of the cube origin.
+-  -x Changes the x coordinate of the model origin.
+-  -y Changes the y coordinate of the model origin.
+-  -z Changes the z coordinate of the model origin.
 ```sh
-./cube my_awesome_wavefront_file.obj -x 67 -y 67 -z 67
+./cube my_awesome_wavefront_file.obj -x 1 -y 2 -z 3
 ```
 
 ### Inputs
