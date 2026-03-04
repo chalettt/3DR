@@ -1,5 +1,7 @@
 #include "rendering/visual.h"
 
+#include <time.h>
+
 #include "geometry/mesh.h"
 #include "geometry/vector.h"
 #include "rendering/camera.h"
@@ -24,7 +26,8 @@ static double get_light_intensity(Point *face_normal)
 void draw_triangle(SDL_Renderer *renderer, Triangle *triangle)
 {
     double intensity = get_light_intensity(triangle->normal);
-    Uint32 color = 255.0 * intensity;
+    SDL_Color color = { 255 * intensity, 255 * intensity, 255 * intensity,
+                        255 };
 
     Point **mesh_triangle = malloc(3 * sizeof(Point *));
     for (size_t i = 0; i < 3; i++)
@@ -40,15 +43,9 @@ void draw_triangle(SDL_Renderer *renderer, Triangle *triangle)
     }
 
     SDL_Vertex vertices[3] = {
-        { { mesh_triangle[0]->x, mesh_triangle[0]->y },
-          { color, color, color, 255 },
-          { 0.0, 0.0 } },
-        { { mesh_triangle[1]->x, mesh_triangle[1]->y },
-          { color, color, color, 255 },
-          { 0.0, 0.0 } },
-        { { mesh_triangle[2]->x, mesh_triangle[2]->y },
-          { color, color, color, 255 },
-          { 0.0, 0.0 } },
+        { { mesh_triangle[0]->x, mesh_triangle[0]->y }, color, { 0.0, 0.0 } },
+        { { mesh_triangle[1]->x, mesh_triangle[1]->y }, color, { 0.0, 0.0 } },
+        { { mesh_triangle[2]->x, mesh_triangle[2]->y }, color, { 0.0, 0.0 } },
     };
 
     SDL_RenderGeometry(renderer, NULL, vertices, 3, NULL, 0);
@@ -70,11 +67,16 @@ static double get_triangle_depth(Triangle *triangle)
     double b_depth = sub_point(&b, cp)->z;
     double c_depth = sub_point(&c, cp)->z;
 
+    a_depth = a_depth < 0 ? -a_depth : a_depth;
+    b_depth = b_depth < 0 ? -b_depth : b_depth;
+    c_depth = c_depth < 0 ? -c_depth : c_depth;
+
     return (a_depth + b_depth + c_depth) / 3.0;
 }
 
 void draw_mesh(SDL_Renderer *renderer, Mesh *mesh)
 {
+    srand(time(NULL));
     Triangle **triangles = mesh->triangles;
     size_t triangle_count = 0;
     while (triangles[triangle_count])

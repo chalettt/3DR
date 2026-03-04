@@ -86,16 +86,12 @@ Mesh *load_mesh(char *path, Point *origin)
     size_t **faces = malloc((buffer_size + 1) * sizeof(size_t *));
     double **vertices = malloc((buffer_size + 1) * sizeof(double *));
     vertices[0] = 0;
-    // double **normals = calloc(BUFFER_SIZE, sizeof(double *));
-    // int **face_normals = calloc(BUFFER_SIZE, sizeof(int *));
 
     char *line = NULL;
     size_t size = 0;
 
     size_t vertex_count = 0;
     size_t face_count = 0;
-    // size_t face_normal_count = 0;
-    // size_t normal_count = 0;
     ssize_t nread;
     while ((nread = getline(&line, &size, obj)) != -1)
     {
@@ -107,11 +103,7 @@ Mesh *load_mesh(char *path, Point *origin)
         }
         if (line[0] == 'v')
         {
-            if (line[1] == 'n')
-            {
-                // normals[normal_count++] = get_vertex(line, true);
-            }
-            else if (line[1] == ' ')
+            if (line[1] == ' ')
             {
                 vertices[vertex_count++] = get_vertex(line, false);
                 vertices[vertex_count] = 0;
@@ -121,7 +113,6 @@ Mesh *load_mesh(char *path, Point *origin)
         {
             faces[face_count++] = get_face(line, false);
             faces[face_count] = 0;
-            // face_normals[face_normal_count++] = get_face(line, true);
         }
         else
             continue;
