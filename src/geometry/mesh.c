@@ -1,9 +1,11 @@
 #include "geometry/mesh.h"
 
+#include <iso646.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "geometry/point.h"
 #include "utils/debug.h"
 
 Mesh *mesh = NULL;
@@ -138,6 +140,7 @@ Mesh *load_mesh(char *path, Point *origin)
     {
         double *vertex = vertices[i];
         mesh->vertices[i] = create_point(vertex[0], vertex[1], vertex[2]);
+        add_point(mesh->vertices[i], origin);
     }
     for (size_t i = 0; faces[i]; i++)
     {
