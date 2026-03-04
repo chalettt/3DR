@@ -1,7 +1,5 @@
 #include "rendering/visual.h"
 
-#include <time.h>
-
 #include "geometry/mesh.h"
 #include "geometry/vector.h"
 #include "rendering/camera.h"
@@ -76,7 +74,6 @@ static double get_triangle_depth(Triangle *triangle)
 
 void draw_mesh(SDL_Renderer *renderer, Mesh *mesh)
 {
-    srand(time(NULL));
     Triangle **triangles = mesh->triangles;
     size_t triangle_count = 0;
     while (triangles[triangle_count])

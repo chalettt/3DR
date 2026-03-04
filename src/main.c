@@ -1,6 +1,10 @@
+#include <bits/time.h>
+#include <time.h>
+
 #include "rendering/camera.h"
 #include "rendering/sdl_manager.h"
 #include "rendering/visual.h"
+#include "utils/debug.h"
 
 Point *handle_args(int argc, char **argv)
 {
@@ -32,6 +36,9 @@ int main(int argc, char **argv)
     Point *origin = handle_args(argc, argv);
 
     char *obj_path = argv[1];
+
+    struct timespec start, end;
+    clock_gettime(CLOCK_REALTIME, &start);
     mesh = load_mesh(obj_path, origin);
     if (!mesh)
     {
@@ -39,6 +46,10 @@ int main(int argc, char **argv)
         sdl_quit(renderer, window);
         return 1;
     }
+    clock_gettime(CLOCK_REALTIME, &end);
+    LOG("Wavefront loading took %f seconds\n",
+        (end.tv_sec - start.tv_sec)
+            + (end.tv_nsec - start.tv_nsec) / 1000000000.0);
 
     size_t triangle_count = 0;
     while (mesh->triangles[triangle_count])

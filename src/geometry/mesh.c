@@ -80,7 +80,7 @@ Mesh *load_mesh(char *path, Point *origin)
         return NULL;
     }
 
-    LOG("File opened, parsing commencing with file: %s", path);
+    LOG("File opened, parsing commencing with file: %s\n", path);
 
     size_t buffer_size = BUFFER_SIZE;
     size_t **faces = malloc((buffer_size + 1) * sizeof(size_t *));
