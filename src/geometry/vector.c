@@ -28,3 +28,12 @@ double dot_product(Point *a, Point *b)
 {
     return a->x * b->x + a->y * b->y + a->z * b->z;
 }
+
+double determinant(Point *a, Point *b, Point *p)
+{
+    double w = b->x - a->x;
+    double x = p->x - a->x;
+    double y = b->y - a->y;
+    double z = p->y - a->y;
+    return w * z - y * x;
+}

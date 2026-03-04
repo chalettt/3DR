@@ -6,14 +6,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "geometry/face.h"
 #include "geometry/point.h"
+#include "geometry/triangle.h"
 #include "utils/debug.h"
+
+Model *model = NULL;
 
 static double *get_vertex(char *line, bool is_normal)
 {
-    double *vertex = malloc(4 * sizeof(double));
-    vertex[3] = 0;
+    double *vertex = malloc(3 * sizeof(double));
 
     size_t token_index = 0;
     char *token = strtok(line + 2 + (is_normal ? 1 : 0), " ");
@@ -27,10 +28,10 @@ static double *get_vertex(char *line, bool is_normal)
     return vertex;
 }
 
-static int *get_face(char *line, bool is_normal)
+static size_t *get_face(char *line, bool is_normal)
 {
     size_t vertex_count = 4;
-    int *face = malloc((vertex_count + 1) * sizeof(int));
+    size_t *face = malloc((vertex_count + 1) * sizeof(size_t));
 
     size_t token_index = 0;
     char *token = strtok(line + 2, " ");
@@ -39,7 +40,7 @@ static int *get_face(char *line, bool is_normal)
         if (token_index >= vertex_count)
         {
             vertex_count *= 2;
-            face = realloc(face, (vertex_count + 1) * sizeof(int));
+            face = realloc(face, (vertex_count + 1) * sizeof(size_t));
         }
         if (is_normal)
             for (size_t i = 0; i < 2; i++)
@@ -54,6 +55,26 @@ static int *get_face(char *line, bool is_normal)
     return face;
 }
 
+static size_t **triangulize(size_t *points)
+{
+    size_t vertex_count = 0;
+    while (points[vertex_count])
+        vertex_count++;
+    size_t triangle_count = vertex_count - 2;
+    size_t **triangles = malloc((triangle_count + 1) * sizeof(size_t *));
+    triangles[triangle_count] = 0;
+
+    for (size_t i = 0; i < triangle_count; i++)
+    {
+        triangles[i] = malloc(3 * sizeof(size_t));
+        triangles[i][0] = points[0] - 1;
+        triangles[i][1] = points[i + 1] - 1;
+        triangles[i][2] = points[i + 2] - 1;
+    }
+
+    return triangles;
+}
+
 Model *load_model(char *path, Point *origin)
 {
     FILE *obj = fopen(path, "r");
@@ -66,7 +87,7 @@ Model *load_model(char *path, Point *origin)
     LOG("File opened, parsing commencing with file: %s", path);
 
     size_t buffer_size = BUFFER_SIZE;
-    int **faces = malloc((buffer_size + 1) * sizeof(int *));
+    size_t **faces = malloc((buffer_size + 1) * sizeof(size_t *));
     double **vertices = malloc((buffer_size + 1) * sizeof(double *));
     vertices[0] = 0;
     // double **normals = calloc(BUFFER_SIZE, sizeof(double *));
@@ -112,7 +133,7 @@ Model *load_model(char *path, Point *origin)
 
     fclose(obj);
 
-    Model *model = malloc(sizeof(Model));
+    model = malloc(sizeof(Model));
     if (!model)
     {
         ERROR("Model allocation failed.");
@@ -120,25 +141,34 @@ Model *load_model(char *path, Point *origin)
     }
 
     model->origin = origin;
-    model->faces = malloc((face_count + 1) * sizeof(Face *));
-    model->faces[face_count] = 0;
+
+    size_t triangle_count = face_count;
+    size_t triangle_index = 0;
+    model->triangles = malloc((triangle_count + 1) * sizeof(Triangle *));
+    model->vertices = malloc((vertex_count + 1) * sizeof(Point *));
+    model->vertices[vertex_count] = 0;
+    for (size_t i = 0; vertices[i]; i++)
+    {
+        double *vertex = vertices[i];
+        model->vertices[i] = create_point(vertex[0], vertex[1], vertex[2]);
+    }
     for (size_t i = 0; faces[i]; i++)
     {
-        size_t face_vertex_count = 0;
-        while (faces[i][face_vertex_count])
-            face_vertex_count++;
-
-        Point **points = malloc((face_vertex_count + 1) * sizeof(Point *));
-        points[face_vertex_count] = 0;
-        for (size_t j = 0; j < face_vertex_count; j++)
+        size_t **triangles = triangulize(faces[i]);
+        for (size_t j = 0; triangles[j]; j++)
         {
-            points[j] = create_point(vertices[faces[i][j] - 1][0],
-                                     vertices[faces[i][j] - 1][1],
-                                     vertices[faces[i][j] - 1][2]);
-            add_point(points[j], origin);
+            if (triangle_index >= triangle_count)
+            {
+                triangle_count *= 2;
+                model->triangles =
+                    realloc(model->triangles,
+                            (triangle_count + 1) * sizeof(Triangle *));
+            }
+            model->triangles[triangle_index++] = create_triangle(triangles[j]);
+            free(triangles[j]);
+            model->triangles[triangle_index] = 0;
         }
-
-        model->faces[i] = create_face(points);
+        free(triangles);
     }
 
     for (size_t i = 0; faces[i]; i++)
@@ -153,27 +183,29 @@ Model *load_model(char *path, Point *origin)
 
 void rotate_model(Model *model, double alpha)
 {
-    for (size_t i = 0; model->faces[i]; i++)
+    for (size_t i = 0; model->vertices[i]; i++)
     {
-        Face *face = model->faces[i];
-        for (size_t j = 0; face->points[j]; j++)
-        {
-            Point *point = face->points[j];
-            rotate_point_y(point, model->origin, alpha);
-        }
-        free(face->normal);
-        face->normal = get_face_normal(face);
+        Point *point = model->vertices[i];
+        rotate_point_y(point, model->origin, alpha);
+    }
+    for (size_t i = 0; model->triangles[i]; i++)
+    {
+        Triangle *triangle = model->triangles[i];
+        free(triangle->normal);
+        triangle->normal = get_triangle_normal(triangle);
     }
 }
 
 void destroy_model(Model *model)
 {
-    for (size_t i = 0; model->faces[i]; i++)
-    {
-        destroy_face(model->faces[i]);
-    }
+    for (size_t i = 0; model->triangles[i]; i++)
+        destroy_triangle(model->triangles[i]);
 
-    free(model->faces);
+    for (size_t i = 0; model->vertices[i]; i++)
+        free(model->vertices[i]);
+
+    free(model->triangles);
+    free(model->vertices);
     free(model->origin);
     free(model);
 }

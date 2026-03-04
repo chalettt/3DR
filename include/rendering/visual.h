@@ -2,15 +2,15 @@
 #define VISUAL_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_surface.h>
 
 #include "geometry/model.h"
 
 /**
  * @brief Draws an obj on screen.
  *
- * @param renderer The renderer to draw on.
- * @param vertices The vertices of the model.
- * @param faces The faces of the model with indices relative to the vertices.
+ * @param texture The texture to draw on.
+ * @param model The model to draw.
  */
 void draw_model(SDL_Renderer *renderer, Model *model);
 

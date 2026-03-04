@@ -1,4 +1,7 @@
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_surface.h>
 #include <iso646.h>
+#include <stdlib.h>
 
 #include "geometry/model.h"
 #include "rendering/camera.h"
@@ -35,7 +38,7 @@ int main(int argc, char **argv)
     Point *origin = handle_args(argc, argv);
 
     char *obj_path = argv[1];
-    Model *model = load_model(obj_path, origin);
+    model = load_model(obj_path, origin);
     if (!model)
     {
         free(origin);
@@ -43,6 +46,9 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    size_t triangle_count = 0;
+    while (model->triangles[triangle_count])
+        triangle_count++;
     init_camera(0, 0, 0);
 
     // Rotation speed.
@@ -112,13 +118,11 @@ int main(int argc, char **argv)
         else
             delta = 2;
 
-        // Clears the window.
+        // Clears the renderer.
         SDL_SetRenderDrawColor(renderer, BLACK, 255);
         SDL_RenderClear(renderer);
-
-        draw_model(renderer, model);
         rotate_model(model, alpha);
-
+        draw_model(renderer, model);
         SDL_RenderPresent(renderer);
 
         // 60 frames a second.

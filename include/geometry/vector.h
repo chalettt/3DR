@@ -29,4 +29,6 @@ Point vector_cross(Point *a, Point *b);
  */
 double dot_product(Point *a, Point *b);
 
+double determinant(Point *a, Point *b, Point *p);
+
 #endif /* VECTOR_H */

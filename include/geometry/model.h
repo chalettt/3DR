@@ -1,21 +1,24 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#include "geometry/face.h"
+#include "geometry/triangle.h"
 
 /**
  * @brief Default buffer size for retrieving data from wavefront files.
  */
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 4096
 
 /**
  * @brief Structure to hold data relative to the loaded model.
  */
 typedef struct model
 {
-    Face **faces;
+    Point **vertices;
+    Triangle **triangles;
     Point *origin;
 } Model;
+
+extern Model *model;
 
 /**
  * @brief Loads a model.

@@ -41,3 +41,11 @@ SDL_Renderer *create_renderer(SDL_Window *window)
 
     return renderer;
 }
+
+SDL_Texture *create_texture(SDL_Renderer *renderer)
+{
+    SDL_Texture *texture =
+        SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888,
+                          SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT);
+    return texture;
+}
