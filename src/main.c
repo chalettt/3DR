@@ -1,9 +1,3 @@
-#include <SDL2/SDL_render.h>
-#include <SDL2/SDL_surface.h>
-#include <iso646.h>
-#include <stdlib.h>
-
-#include "geometry/model.h"
 #include "rendering/camera.h"
 #include "rendering/sdl_manager.h"
 #include "rendering/visual.h"
@@ -38,8 +32,8 @@ int main(int argc, char **argv)
     Point *origin = handle_args(argc, argv);
 
     char *obj_path = argv[1];
-    model = load_model(obj_path, origin);
-    if (!model)
+    mesh = load_mesh(obj_path, origin);
+    if (!mesh)
     {
         free(origin);
         sdl_quit(renderer, window);
@@ -47,7 +41,7 @@ int main(int argc, char **argv)
     }
 
     size_t triangle_count = 0;
-    while (model->triangles[triangle_count])
+    while (mesh->triangles[triangle_count])
         triangle_count++;
     init_camera(0, 0, 0);
 
@@ -121,8 +115,8 @@ int main(int argc, char **argv)
         // Clears the renderer.
         SDL_SetRenderDrawColor(renderer, BLACK, 255);
         SDL_RenderClear(renderer);
-        rotate_model(model, alpha);
-        draw_model(renderer, model);
+        rotate_mesh(mesh, alpha);
+        draw_mesh(renderer, mesh);
         SDL_RenderPresent(renderer);
 
         // 60 frames a second.
@@ -133,7 +127,7 @@ int main(int argc, char **argv)
     sdl_quit(renderer, window);
 
     // Frees everything
-    destroy_model(model);
+    destroy_mesh(mesh);
 
     return 0;
 }

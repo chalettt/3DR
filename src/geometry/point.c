@@ -1,8 +1,3 @@
-#include "geometry/point.h"
-
-#include <math.h>
-#include <stdlib.h>
-
 #include "geometry/vector.h"
 #include "rendering/camera.h"
 #include "rendering/sdl_manager.h"

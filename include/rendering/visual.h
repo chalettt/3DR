@@ -2,16 +2,15 @@
 #define VISUAL_H
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_surface.h>
 
-#include "geometry/model.h"
+#include "geometry/mesh.h"
 
 /**
  * @brief Draws an obj on screen.
  *
- * @param texture The texture to draw on.
- * @param model The model to draw.
+ * @param renderer The renderer to draw on.
+ * @param mesh The mesh to draw.
  */
-void draw_model(SDL_Renderer *renderer, Model *model);
+void draw_mesh(SDL_Renderer *renderer, Mesh *mesh);
 
 #endif /* ! VISUAL_H */

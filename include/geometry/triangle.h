@@ -17,7 +17,7 @@ typedef struct triangle
 /**
  * @brief Creates a triangle.
  *
- * @param points The array of points which defines a triangle.
+ * @param indices The indices of each vertex relative to the mesh's vertices.
  * @return The created triangle.
  */
 Triangle *create_triangle(size_t indices[3]);

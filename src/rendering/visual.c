@@ -1,13 +1,6 @@
 #include "rendering/visual.h"
 
-#include <SDL2/SDL_image.h>
-#include <math.h>
-#include <stdbool.h>
-#include <stdlib.h>
-
-#include "geometry/model.h"
-#include "geometry/point.h"
-#include "geometry/triangle.h"
+#include "geometry/mesh.h"
 #include "geometry/vector.h"
 #include "rendering/camera.h"
 
@@ -36,7 +29,7 @@ void draw_triangle(SDL_Renderer *renderer, Triangle *triangle)
     Point **mesh_triangle = malloc(3 * sizeof(Point *));
     for (size_t i = 0; i < 3; i++)
     {
-        mesh_triangle[i] = project(model->vertices[triangle->indices[i]]);
+        mesh_triangle[i] = project(mesh->vertices[triangle->indices[i]]);
         if (!mesh_triangle[i])
         {
             for (size_t j = 0; j < i; j++)
@@ -67,9 +60,9 @@ void draw_triangle(SDL_Renderer *renderer, Triangle *triangle)
 
 static double get_triangle_depth(Triangle *triangle)
 {
-    Point a = *(model->vertices[triangle->indices[0]]);
-    Point b = *(model->vertices[triangle->indices[1]]);
-    Point c = *(model->vertices[triangle->indices[2]]);
+    Point a = *(mesh->vertices[triangle->indices[0]]);
+    Point b = *(mesh->vertices[triangle->indices[1]]);
+    Point c = *(mesh->vertices[triangle->indices[2]]);
 
     Point *cp = camera->position;
 
@@ -80,9 +73,9 @@ static double get_triangle_depth(Triangle *triangle)
     return (a_depth + b_depth + c_depth) / 3.0;
 }
 
-void draw_model(SDL_Renderer *renderer, Model *model)
+void draw_mesh(SDL_Renderer *renderer, Mesh *mesh)
 {
-    Triangle **triangles = model->triangles;
+    Triangle **triangles = mesh->triangles;
     size_t triangle_count = 0;
     while (triangles[triangle_count])
         triangle_count++;
@@ -103,7 +96,7 @@ void draw_model(SDL_Renderer *renderer, Model *model)
     for (size_t i = 0; triangles[i]; i++)
     {
         Triangle *triangle = triangles[i];
-        Point rel = *(model->vertices[triangle->indices[0]]);
+        Point rel = *(mesh->vertices[triangle->indices[0]]);
         sub_point(&rel, camera->position);
         if (dot_product(triangle->normal, &rel) < 0)
             draw_triangle(renderer, triangle);

@@ -1,16 +1,12 @@
-#include "geometry/model.h"
+#include "geometry/mesh.h"
 
-#include <asm-generic/errno-base.h>
 #include <stdbool.h>
-#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "geometry/point.h"
-#include "geometry/triangle.h"
 #include "utils/debug.h"
 
-Model *model = NULL;
+Mesh *mesh = NULL;
 
 static double *get_vertex(char *line, bool is_normal)
 {
@@ -75,7 +71,7 @@ static size_t **triangulize(size_t *points)
     return triangles;
 }
 
-Model *load_model(char *path, Point *origin)
+Mesh *load_mesh(char *path, Point *origin)
 {
     FILE *obj = fopen(path, "r");
     if (!obj)
@@ -133,24 +129,24 @@ Model *load_model(char *path, Point *origin)
 
     fclose(obj);
 
-    model = malloc(sizeof(Model));
-    if (!model)
+    mesh = malloc(sizeof(Mesh));
+    if (!mesh)
     {
-        ERROR("Model allocation failed.");
+        ERROR("mesh allocation failed.");
         return NULL;
     }
 
-    model->origin = origin;
+    mesh->origin = origin;
 
     size_t triangle_count = face_count;
     size_t triangle_index = 0;
-    model->triangles = malloc((triangle_count + 1) * sizeof(Triangle *));
-    model->vertices = malloc((vertex_count + 1) * sizeof(Point *));
-    model->vertices[vertex_count] = 0;
+    mesh->triangles = malloc((triangle_count + 1) * sizeof(Triangle *));
+    mesh->vertices = malloc((vertex_count + 1) * sizeof(Point *));
+    mesh->vertices[vertex_count] = 0;
     for (size_t i = 0; vertices[i]; i++)
     {
         double *vertex = vertices[i];
-        model->vertices[i] = create_point(vertex[0], vertex[1], vertex[2]);
+        mesh->vertices[i] = create_point(vertex[0], vertex[1], vertex[2]);
     }
     for (size_t i = 0; faces[i]; i++)
     {
@@ -160,13 +156,12 @@ Model *load_model(char *path, Point *origin)
             if (triangle_index >= triangle_count)
             {
                 triangle_count *= 2;
-                model->triangles =
-                    realloc(model->triangles,
-                            (triangle_count + 1) * sizeof(Triangle *));
+                mesh->triangles = realloc(
+                    mesh->triangles, (triangle_count + 1) * sizeof(Triangle *));
             }
-            model->triangles[triangle_index++] = create_triangle(triangles[j]);
+            mesh->triangles[triangle_index++] = create_triangle(triangles[j]);
             free(triangles[j]);
-            model->triangles[triangle_index] = 0;
+            mesh->triangles[triangle_index] = 0;
         }
         free(triangles);
     }
@@ -178,34 +173,34 @@ Model *load_model(char *path, Point *origin)
 
     free(faces);
     free(vertices);
-    return model;
+    return mesh;
 }
 
-void rotate_model(Model *model, double alpha)
+void rotate_mesh(Mesh *mesh, double alpha)
 {
-    for (size_t i = 0; model->vertices[i]; i++)
+    for (size_t i = 0; mesh->vertices[i]; i++)
     {
-        Point *point = model->vertices[i];
-        rotate_point_y(point, model->origin, alpha);
+        Point *point = mesh->vertices[i];
+        rotate_point_y(point, mesh->origin, alpha);
     }
-    for (size_t i = 0; model->triangles[i]; i++)
+    for (size_t i = 0; mesh->triangles[i]; i++)
     {
-        Triangle *triangle = model->triangles[i];
+        Triangle *triangle = mesh->triangles[i];
         free(triangle->normal);
         triangle->normal = get_triangle_normal(triangle);
     }
 }
 
-void destroy_model(Model *model)
+void destroy_mesh(Mesh *mesh)
 {
-    for (size_t i = 0; model->triangles[i]; i++)
-        destroy_triangle(model->triangles[i]);
+    for (size_t i = 0; mesh->triangles[i]; i++)
+        destroy_triangle(mesh->triangles[i]);
 
-    for (size_t i = 0; model->vertices[i]; i++)
-        free(model->vertices[i]);
+    for (size_t i = 0; mesh->vertices[i]; i++)
+        free(mesh->vertices[i]);
 
-    free(model->triangles);
-    free(model->vertices);
-    free(model->origin);
-    free(model);
+    free(mesh->triangles);
+    free(mesh->vertices);
+    free(mesh->origin);
+    free(mesh);
 }

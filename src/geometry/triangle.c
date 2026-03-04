@@ -1,17 +1,14 @@
-#include "geometry/triangle.h"
-
 #include <stdlib.h>
 
-#include "geometry/model.h"
-#include "geometry/point.h"
+#include "geometry/mesh.h"
 #include "geometry/vector.h"
 
 Point *get_triangle_normal(Triangle *triangle)
 {
-    Point a = *(model->vertices[triangle->indices[1]]);
-    Point b = *(model->vertices[triangle->indices[2]]);
-    sub_point(&a, model->vertices[triangle->indices[0]]);
-    sub_point(&b, model->vertices[triangle->indices[0]]);
+    Point a = *(mesh->vertices[triangle->indices[1]]);
+    Point b = *(mesh->vertices[triangle->indices[2]]);
+    sub_point(&a, mesh->vertices[triangle->indices[0]]);
+    sub_point(&b, mesh->vertices[triangle->indices[0]]);
 
     Point normal = vector_cross(&a, &b);
     normal = vector_normalize(&normal);

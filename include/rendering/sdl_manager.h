@@ -69,6 +69,5 @@ SDL_Window *create_window(int w, int h);
  * @return The created renderer.
  */
 SDL_Renderer *create_renderer(SDL_Window *window);
-SDL_Texture *create_texture(SDL_Renderer *renderer);
 
 #endif /* ! SDL_MANAGER_H */
