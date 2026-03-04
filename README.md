@@ -2,6 +2,10 @@
 This project is a 3D renderer made in C using SDL2, it handles user input to move the camera around and lets the user load any wavefront (.obj) files.
 It rotates the model and applies face lighting.
 
+TODO:
+- Optimization
+- Multi-threading
+
 ## Installation
 ```sh
 git clone https://github.com/chalettt/3DR.git
