@@ -38,7 +38,7 @@ Each header file contains a doxygen documentation, you can run the following com
 make doc
 ```
 
-## 
+## Showcase
 | Monkey mesh                            | Human mesh                                
 | ------------------------------------ | -------------------------------------------- | 
 | ![Monkey rendering](assets/images/monkey.png) | ![Human rendering](assets/images/human.png) | 
