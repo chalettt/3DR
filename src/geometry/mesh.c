@@ -130,6 +130,7 @@ Mesh *load_mesh(char *path, Point *origin)
     }
 
     mesh->origin = origin;
+    mesh->vertex_count = vertex_count;
 
     size_t triangle_count = face_count;
     size_t triangle_index = 0;
@@ -159,6 +160,8 @@ Mesh *load_mesh(char *path, Point *origin)
         }
         free(triangles);
     }
+
+    mesh->triangle_count = triangle_count;
 
     for (size_t i = 0; faces[i]; i++)
         free(faces[i]);

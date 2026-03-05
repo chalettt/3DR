@@ -1,6 +1,8 @@
 #ifndef MESH_H
 #define MESH_H
 
+#include <stddef.h>
+
 #include "geometry/triangle.h"
 
 /**
@@ -16,6 +18,8 @@ typedef struct mesh
     Point **vertices;
     Triangle **triangles;
     Point *origin;
+    size_t vertex_count;
+    size_t triangle_count;
 } Mesh;
 
 extern Mesh *mesh;

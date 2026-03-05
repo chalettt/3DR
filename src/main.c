@@ -1,3 +1,4 @@
+#include <SDL2/SDL_render.h>
 #include <bits/time.h>
 #include <time.h>
 
@@ -29,6 +30,7 @@ int main(int argc, char **argv)
     // Creating the window and renderer.
     SDL_Window *window = create_window(WIDTH, HEIGHT);
     SDL_Renderer *renderer = create_renderer(window);
+    SDL_Texture *texture = create_texture(renderer);
 
     unsigned running = 1;
     SDL_Event event;
@@ -124,10 +126,9 @@ int main(int argc, char **argv)
             delta = 2;
 
         // Clears the renderer.
-        SDL_SetRenderDrawColor(renderer, BLACK, 255);
-        SDL_RenderClear(renderer);
         rotate_mesh(mesh, alpha);
-        draw_mesh(renderer, mesh);
+        draw_mesh(texture, mesh);
+        SDL_RenderCopy(renderer, texture, NULL, NULL);
         SDL_RenderPresent(renderer);
 
         // 60 frames a second.

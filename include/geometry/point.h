@@ -83,7 +83,7 @@ Point *add_dir(Point *p, Direction d, double delta);
  * @param p The point to project.
  * @return The point p.
  */
-Point *project(Point *p);
+Point project(Point *p);
 
 /**
  * @brief Rotates a point according to the Z axis around another point.

@@ -75,7 +75,7 @@ Point *add_dir(Point *p, Direction d, double delta)
     return p;
 }
 
-Point *project(Point *point)
+Point project(Point *point)
 {
     double fov = 90.0 * M_PI / 180.0;
     double d = WIDTH / 2.0 / tan(fov / 2);
@@ -97,13 +97,13 @@ Point *project(Point *point)
     double y = dot_product(&rel, &up);
     double z = dot_product(&rel, &forward);
 
-    if (z < 0.01)
-        return NULL;
-
     double projection_x = d * x / z + WIDTH / 2.0;
     double projection_y = HEIGHT / 2.0 - d * y / z;
 
-    return create_point(projection_x, projection_y, z);
+    projection_x = fmax(0, fmin(projection_x, WIDTH - 1));
+    projection_y = fmax(0, fmin(projection_y, HEIGHT - 1));
+
+    return (Point){ projection_x, projection_y, z };
 }
 
 Point *rotate_point_z(Point *point, Point *origin, double alpha)

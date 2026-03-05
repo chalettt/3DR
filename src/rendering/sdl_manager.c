@@ -1,5 +1,7 @@
 #include "rendering/sdl_manager.h"
 
+#include <SDL2/SDL_render.h>
+
 #include "utils/debug.h"
 
 int sdl_init(void)
@@ -38,4 +40,10 @@ SDL_Renderer *create_renderer(SDL_Window *window)
     SDL_RenderPresent(renderer);
 
     return renderer;
+}
+
+SDL_Texture *create_texture(SDL_Renderer *renderer)
+{
+    return SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
+                             SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT);
 }
