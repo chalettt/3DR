@@ -1,39 +1,48 @@
 # 3D Renderer
-This project is a 3D renderer made in C using SDL2, it handles user input to move the camera around and lets the user load any wavefront (.obj) files.
-It rotates the model and applies face lighting.
-## Installation
+
+<img src="assets/images/human.png" width="420"> <img src="assets/images/penger.png" width="420">
+<img src="assets/images/monkey.png" width="420"> <img src="assets/images/duck.png" width="420">
+
+This is a 3D renderer written in C using SDL2.
+
+## Features
+* Wavefront (.obj) files loading
+* Z buffering
+* Back face culling
+* Camera movement
+* Runtime rendering
+* Mesh rotation
+* Light interpolation
+
+## Build
 ```sh
 git clone https://github.com/chalettt/3DR.git
 cd 3DR && make
 ```
-Do not forget to install SDL2 through your favorite package manager.
+SDL2 needs to be installed for this project to be built.
 
 ## Usage
+If launched without arguments, the default cube will be loaded.
+
 ```sh
-./cube my_awesome_wavefront_file.obj
+./3DR my_awesome_wavefront_file.obj
 ```
 
 ### Flags
--  -x Changes the x coordinate of the model origin.
--  -y Changes the y coordinate of the model origin.
--  -z Changes the z coordinate of the model origin.
+*  -x/y/z Changes mesh coordinates
+*  -s Scales the mesh
 ```sh
-./cube my_awesome_wavefront_file.obj -x 1 -y 2 -z 3
+./3DR my_awesome_wavefront_file.obj -x 1 -y 2 -z 3 -s 10
 ```
 
 ### Inputs
-- WASD to move around.
-- Space and Left Control to respectively go up and down.
-- Left Shift to go faster.
-- Mouse movements as camera rotation.
+* Rotation: mouse movements
+* Pan mesh: mouse hold
+* Up/Down: <kbd>Space</kbd> <kbd>Shift</kbd> 
+* Font/Rear/Left/Right: <kbd>W</kbd> <kbd>S</kbd> <kbd>A</kbd> <kbd>D</kbd>
 
 ## Documentation
 Each header file contains a doxygen documentation, you can run the following command to generate the full documentation (which will generate in /docs):
 ```sh
 make doc
 ```
-
-## Showcase
-| Monkey mesh                            | Human mesh                                
-| ------------------------------------ | -------------------------------------------- | 
-| ![Monkey rendering](assets/images/monkey.png) | ![Human rendering](assets/images/human.png) | 
