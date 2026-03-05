@@ -14,6 +14,9 @@ This is a 3D renderer written in C using SDL2.
 * Mesh rotation
 * Light interpolation
 
+## Download
+Releases are available on the [release](https://github.com/chalettt/3DR/releases) page
+
 ## Build
 ```sh
 git clone https://github.com/chalettt/3DR.git
@@ -22,7 +25,6 @@ cd 3DR && make
 SDL2 needs to be installed for this project to be built.
 
 ## Usage
-If launched without arguments, the default cube will be loaded.
 
 ```sh
 ./3DR my_awesome_wavefront_file.obj
