@@ -48,5 +48,6 @@ void destroy_mesh(Mesh *mesh);
  * @param alpha The angle to rotate the mesh by.
  */
 void rotate_mesh(Mesh *mesh, double alpha);
+void scale_mesh(Mesh *mesh, double scale);
 
 #endif /* mesh_H*/

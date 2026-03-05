@@ -114,7 +114,8 @@ Mesh *load_mesh(char *path, Point *origin)
     ssize_t nread;
     while ((nread = getline(&line, &size, obj)) != -1)
     {
-        if (vertex_count >= buffer_size || face_count >= buffer_size)
+        if (vertex_count >= buffer_size || face_count >= buffer_size
+            || normal_count >= buffer_size)
         {
             buffer_size *= 2;
             faces = realloc(faces, (buffer_size + 1) * sizeof(size_t **));
@@ -226,7 +227,8 @@ void rotate_mesh(Mesh *mesh, double alpha)
         Point *point = mesh->vertices[i]->position;
         Point *normal = mesh->vertices[i]->normal;
         Point world_origin = { 0, 0, 0 };
-        rotate_point_y(normal, &world_origin, alpha);
+        if (normal)
+            rotate_point_y(normal, &world_origin, alpha);
         rotate_point_y(point, mesh->origin, alpha);
     }
     for (size_t i = 0; mesh->triangles[i]; i++)
@@ -234,6 +236,17 @@ void rotate_mesh(Mesh *mesh, double alpha)
         Triangle *triangle = mesh->triangles[i];
         free(triangle->normal);
         triangle->normal = get_triangle_normal(triangle);
+    }
+}
+
+void scale_mesh(Mesh *mesh, double scale)
+{
+    for (size_t i = 0; mesh->vertices[i]; i++)
+    {
+        Point *p = mesh->vertices[i]->position;
+        sub_point(p, mesh->origin);
+        scalar_product(mesh->vertices[i]->position, scale);
+        add_point(p, mesh->origin);
     }
 }
 

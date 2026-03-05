@@ -2,12 +2,13 @@
 #include <bits/time.h>
 #include <time.h>
 
+#include "geometry/mesh.h"
 #include "rendering/camera.h"
 #include "rendering/sdl_manager.h"
 #include "rendering/visual.h"
 #include "utils/debug.h"
 
-Point *handle_args(int argc, char **argv)
+Point *handle_args(int argc, char **argv, double *scale)
 {
     Point *origin = malloc(sizeof(Point));
     for (int i = 2; i < argc; i++)
@@ -18,6 +19,8 @@ Point *handle_args(int argc, char **argv)
             origin->y = atoi(argv[++i]);
         else if (!strcmp(argv[i], "-z"))
             origin->z = atoi(argv[++i]);
+        else if (!strcmp(argv[i], "-s"))
+            *scale = strtof(argv[++i], NULL);
     }
     return origin;
 }
@@ -35,7 +38,8 @@ int main(int argc, char **argv)
     unsigned running = 1;
     SDL_Event event;
 
-    Point *origin = handle_args(argc, argv);
+    double scale = 1;
+    Point *origin = handle_args(argc, argv, &scale);
 
     char *obj_path = argv[1];
 
@@ -48,10 +52,14 @@ int main(int argc, char **argv)
         sdl_quit(renderer, window);
         return 1;
     }
+
     clock_gettime(CLOCK_REALTIME, &end);
     LOG("Wavefront loading took %f seconds\n",
         (end.tv_sec - start.tv_sec)
             + (end.tv_nsec - start.tv_nsec) / 1000000000.0);
+
+    if (scale != 1)
+        scale_mesh(mesh, scale);
 
     size_t triangle_count = 0;
     while (mesh->triangles[triangle_count])
