@@ -1,10 +1,7 @@
 #include "rendering/visual.h"
 
 #include <stdbool.h>
-#include <stdint.h>
 
-#include "geometry/mesh.h"
-#include "geometry/point.h"
 #include "geometry/vector.h"
 #include "rendering/camera.h"
 #include "rendering/sdl_manager.h"
@@ -85,7 +82,6 @@ static void rasterize_triangle(Triangle *triangle)
                 float depth = w0 * a.z + w1 * b.z + w2 * c.z;
 
                 int idx = y * WIDTH + x;
-
                 if (depth < zbuffer[idx])
                 {
                     zbuffer[idx] = depth;
