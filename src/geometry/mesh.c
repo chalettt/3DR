@@ -220,16 +220,46 @@ Mesh *load_mesh(char *path, Point *origin)
     return mesh;
 }
 
-void rotate_mesh(Mesh *mesh, double alpha)
+void rotate_mesh(Mesh *mesh, double alpha, Direction direction)
 {
     for (size_t i = 0; mesh->vertices[i]; i++)
     {
         Point *point = mesh->vertices[i]->position;
         Point *normal = mesh->vertices[i]->normal;
         Point world_origin = { 0, 0, 0 };
-        if (normal)
-            rotate_point_y(normal, &world_origin, alpha);
-        rotate_point_y(point, mesh->origin, alpha);
+        switch (direction)
+        {
+        case LEFT:
+            if (normal)
+                rotate_point_y(normal, &world_origin, alpha);
+            rotate_point_y(point, mesh->origin, alpha);
+            break;
+        case RIGHT:
+            if (normal)
+                rotate_point_y(normal, &world_origin, -alpha);
+            rotate_point_y(point, mesh->origin, -alpha);
+            break;
+        case FRONT:
+            if (normal)
+                rotate_point_x(normal, &world_origin, alpha);
+            rotate_point_x(point, mesh->origin, alpha);
+            break;
+        case BACK:
+            if (normal)
+                rotate_point_x(normal, &world_origin, -alpha);
+            rotate_point_x(point, mesh->origin, -alpha);
+            break;
+        case UP:
+            if (normal)
+                rotate_point_z(normal, &world_origin, alpha);
+            rotate_point_z(point, mesh->origin, alpha);
+            break;
+        case DOWN:
+            if (normal)
+                rotate_point_z(normal, &world_origin, -alpha);
+            rotate_point_z(point, mesh->origin, -alpha);
+            break;
+        }
     }
     for (size_t i = 0; mesh->triangles[i]; i++)
     {

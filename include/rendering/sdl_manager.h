@@ -24,6 +24,11 @@
 #define BLACK 0, 0, 0
 
 /**
+ * @brief Gray color.
+ */
+#define GRAY 128, 128, 128
+
+/**
  * @brief Red color.
  */
 #define RED 255, 0, 0

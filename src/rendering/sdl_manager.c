@@ -35,7 +35,7 @@ SDL_Renderer *create_renderer(SDL_Window *window)
 {
     SDL_Renderer *renderer =
         SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    SDL_SetRenderDrawColor(renderer, BLACK, 255);
+    SDL_SetRenderDrawColor(renderer, GRAY, 255);
     SDL_RenderClear(renderer);
     SDL_RenderPresent(renderer);
 

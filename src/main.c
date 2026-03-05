@@ -1,8 +1,11 @@
+#include <SDL2/SDL_events.h>
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_scancode.h>
 #include <bits/time.h>
 #include <time.h>
 
 #include "geometry/mesh.h"
+#include "geometry/point.h"
 #include "rendering/camera.h"
 #include "rendering/sdl_manager.h"
 #include "rendering/visual.h"
@@ -73,10 +76,13 @@ int main(int argc, char **argv)
 
     SDL_SetRelativeMouseMode(SDL_TRUE);
 
+    int mouse_button = 0;
+
     // Window loop
     while (running)
     {
-        double mouse_delta_x, mouse_delta_y = 0.0;
+        double mouse_delta_x = 0.0;
+        double mouse_delta_y = 0.0;
 
         while (SDL_PollEvent(&event))
         {
@@ -90,7 +96,8 @@ int main(int argc, char **argv)
             case SDL_MOUSEMOTION: {
                 mouse_delta_x = event.motion.xrel;
                 mouse_delta_y = event.motion.yrel;
-
+                if (mouse_button)
+                    break;
                 if (mouse_delta_x != 0)
                     rotate_camera_y(alpha, mouse_delta_x / 10);
                 if (mouse_delta_y != 0)
@@ -98,7 +105,11 @@ int main(int argc, char **argv)
                 break;
             }
             case SDL_MOUSEBUTTONDOWN:
+                mouse_button = 1;
                 SDL_SetRelativeMouseMode(SDL_TRUE);
+                break;
+            case SDL_MOUSEBUTTONUP:
+                mouse_button = 0;
                 break;
             default:
                 break;
@@ -110,16 +121,16 @@ int main(int argc, char **argv)
         if (state[SDL_SCANCODE_ESCAPE])
             SDL_SetRelativeMouseMode(SDL_FALSE);
 
-        if (state[SDL_SCANCODE_A] || state[SDL_SCANCODE_LEFT])
+        if (state[SDL_SCANCODE_A])
             move_camera(LEFT, delta);
 
-        if (state[SDL_SCANCODE_D] || state[SDL_SCANCODE_RIGHT])
+        if (state[SDL_SCANCODE_D])
             move_camera(RIGHT, delta);
 
-        if (state[SDL_SCANCODE_W] || state[SDL_SCANCODE_UP])
+        if (state[SDL_SCANCODE_W])
             move_camera(FRONT, delta);
 
-        if (state[SDL_SCANCODE_S] || state[SDL_SCANCODE_DOWN])
+        if (state[SDL_SCANCODE_S])
             move_camera(BACK, delta);
 
         if (state[SDL_SCANCODE_SPACE])
@@ -133,8 +144,12 @@ int main(int argc, char **argv)
         else
             delta = 2;
 
-        // Clears the renderer.
-        rotate_mesh(mesh, alpha);
+        if (mouse_button)
+        {
+            rotate_mesh(mesh, mouse_delta_x * alpha, RIGHT);
+            rotate_mesh(mesh, -mouse_delta_y * alpha, FRONT);
+        }
+
         draw_mesh(texture, mesh);
         SDL_RenderCopy(renderer, texture, NULL, NULL);
         SDL_RenderPresent(renderer);

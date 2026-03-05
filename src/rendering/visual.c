@@ -1,6 +1,7 @@
 #include "rendering/visual.h"
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "geometry/triangle.h"
 #include "geometry/vector.h"
@@ -16,7 +17,8 @@ static void clear_buffers(void)
 {
     for (int i = 0; i < WIDTH * HEIGHT; i++)
     {
-        framebuffer[i] = 0;
+        uint8_t value = 64;
+        framebuffer[i] = (255 << 24) | (value << 16) | (value << 8) | value;
         zbuffer[i] = FLT_MAX;
     }
 }
