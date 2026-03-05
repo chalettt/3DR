@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include "geometry/triangle.h"
+#include "geometry/vertex.h"
 
 /**
  * @brief Default buffer size for retrieving data from wavefront files.
@@ -15,7 +16,7 @@
  */
 typedef struct mesh
 {
-    Point **vertices;
+    Vertex **vertices;
     Triangle **triangles;
     Point *origin;
     size_t vertex_count;

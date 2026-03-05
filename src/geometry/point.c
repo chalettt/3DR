@@ -100,9 +100,6 @@ Point project(Point *point)
     double projection_x = d * x / z + WIDTH / 2.0;
     double projection_y = HEIGHT / 2.0 - d * y / z;
 
-    projection_x = fmax(0, fmin(projection_x, WIDTH - 1));
-    projection_y = fmax(0, fmin(projection_y, HEIGHT - 1));
-
     return (Point){ projection_x, projection_y, z };
 }
 

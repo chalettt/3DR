@@ -2,6 +2,7 @@
 
 #include <iso646.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -26,34 +27,47 @@ static double *get_vertex(char *line, bool is_normal)
     return vertex;
 }
 
-static size_t *get_face(char *line, bool is_normal)
+static size_t **get_face(char *line)
 {
     size_t vertex_count = 4;
-    size_t *face = malloc((vertex_count + 1) * sizeof(size_t));
+    size_t **face = malloc((vertex_count + 1) * sizeof(size_t *));
 
     size_t token_index = 0;
-    char *token = strtok(line + 2, " ");
+    char *line_save;
+    char *token = strtok_r(line + 2, " ", &line_save);
     while (token)
     {
+        if (token[0] < '0' || token[0] > '9')
+            break;
+        char *composants[3] = { 0 };
         if (token_index >= vertex_count)
         {
             vertex_count *= 2;
-            face = realloc(face, (vertex_count + 1) * sizeof(size_t));
+            face = realloc(face, (vertex_count + 1) * sizeof(size_t *));
         }
-        if (is_normal)
-            for (size_t i = 0; i < 2; i++)
-                token = strchr(token, '/') + 1;
 
-        face[token_index] = strtol(token, NULL, 10);
+        face[token_index] = malloc(3 * sizeof(size_t));
+
+        for (size_t i = 0; i < 3; i++)
+        {
+            composants[i] = token;
+            if (i < 2)
+                token = strchr(token, '/') + 1;
+        }
+
+        face[token_index][2] = strtol(composants[2], NULL, 10);
+        face[token_index][0] = strtol(composants[0], NULL, 10);
+
         token_index++;
-        face[token_index] = 0;
-        token = strtok(NULL, " ");
+
+        token = strtok_r(NULL, " ", &line_save);
     }
 
+    face[token_index] = 0;
     return face;
 }
 
-static size_t **triangulize(size_t *points)
+static size_t **triangulize(size_t **points)
 {
     size_t vertex_count = 0;
     while (points[vertex_count])
@@ -65,9 +79,9 @@ static size_t **triangulize(size_t *points)
     for (size_t i = 0; i < triangle_count; i++)
     {
         triangles[i] = malloc(3 * sizeof(size_t));
-        triangles[i][0] = points[0] - 1;
-        triangles[i][1] = points[i + 1] - 1;
-        triangles[i][2] = points[i + 2] - 1;
+        triangles[i][0] = points[0][0] - 1;
+        triangles[i][1] = points[i + 1][0] - 1;
+        triangles[i][2] = points[i + 2][0] - 1;
     }
 
     return triangles;
@@ -85,8 +99,10 @@ Mesh *load_mesh(char *path, Point *origin)
     LOG("File opened, parsing commencing with file: %s\n", path);
 
     size_t buffer_size = BUFFER_SIZE;
-    size_t **faces = malloc((buffer_size + 1) * sizeof(size_t *));
+    size_t ***faces = malloc((buffer_size + 1) * sizeof(size_t **));
     double **vertices = malloc((buffer_size + 1) * sizeof(double *));
+    double **normals = malloc((buffer_size + 1) * sizeof(double *));
+
     vertices[0] = 0;
 
     char *line = NULL;
@@ -94,17 +110,24 @@ Mesh *load_mesh(char *path, Point *origin)
 
     size_t vertex_count = 0;
     size_t face_count = 0;
+    size_t normal_count = 0;
     ssize_t nread;
     while ((nread = getline(&line, &size, obj)) != -1)
     {
         if (vertex_count >= buffer_size || face_count >= buffer_size)
         {
             buffer_size *= 2;
-            faces = realloc(faces, (buffer_size + 1) * sizeof(int *));
+            faces = realloc(faces, (buffer_size + 1) * sizeof(size_t **));
             vertices = realloc(vertices, (buffer_size + 1) * sizeof(double *));
+            normals = realloc(normals, (buffer_size + 1) * sizeof(double *));
         }
         if (line[0] == 'v')
         {
+            if (line[1] == 'n')
+            {
+                normals[normal_count++] = get_vertex(line, true);
+                normals[normal_count] = 0;
+            }
             if (line[1] == ' ')
             {
                 vertices[vertex_count++] = get_vertex(line, false);
@@ -113,12 +136,14 @@ Mesh *load_mesh(char *path, Point *origin)
         }
         else if (line[0] == 'f')
         {
-            faces[face_count++] = get_face(line, false);
+            faces[face_count++] = get_face(line);
             faces[face_count] = 0;
         }
         else
             continue;
     }
+
+    free(line);
 
     fclose(obj);
 
@@ -140,11 +165,24 @@ Mesh *load_mesh(char *path, Point *origin)
     for (size_t i = 0; vertices[i]; i++)
     {
         double *vertex = vertices[i];
-        mesh->vertices[i] = create_point(vertex[0], vertex[1], vertex[2]);
-        add_point(mesh->vertices[i], origin);
+        Point *vertex_position = create_point(vertex[0], vertex[1], vertex[2]);
+        add_point(vertex_position, origin);
+        mesh->vertices[i] = create_vertex(vertex_position, NULL);
     }
     for (size_t i = 0; faces[i]; i++)
     {
+        for (size_t j = 0; faces[i][j]; j++)
+        {
+            size_t v_idx = faces[i][j][0] - 1;
+            size_t n_idx = faces[i][j][2] - 1;
+            Vertex *vertex = mesh->vertices[v_idx];
+            if (!vertex->normal)
+            {
+                Point *normal = create_point(
+                    normals[n_idx][0], normals[n_idx][1], normals[n_idx][2]);
+                vertex->normal = normal;
+            }
+        }
         size_t **triangles = triangulize(faces[i]);
         for (size_t j = 0; triangles[j]; j++)
         {
@@ -164,12 +202,20 @@ Mesh *load_mesh(char *path, Point *origin)
     mesh->triangle_count = triangle_count;
 
     for (size_t i = 0; faces[i]; i++)
+    {
+        for (size_t j = 0; faces[i][j]; j++)
+            free(faces[i][j]);
         free(faces[i]);
+    }
     for (size_t i = 0; vertices[i]; i++)
         free(vertices[i]);
 
+    for (size_t i = 0; normals[i]; i++)
+        free(normals[i]);
+
     free(faces);
     free(vertices);
+    free(normals);
     return mesh;
 }
 
@@ -177,7 +223,10 @@ void rotate_mesh(Mesh *mesh, double alpha)
 {
     for (size_t i = 0; mesh->vertices[i]; i++)
     {
-        Point *point = mesh->vertices[i];
+        Point *point = mesh->vertices[i]->position;
+        Point *normal = mesh->vertices[i]->normal;
+        Point world_origin = { 0, 0, 0 };
+        rotate_point_y(normal, &world_origin, alpha);
         rotate_point_y(point, mesh->origin, alpha);
     }
     for (size_t i = 0; mesh->triangles[i]; i++)
@@ -194,7 +243,7 @@ void destroy_mesh(Mesh *mesh)
         destroy_triangle(mesh->triangles[i]);
 
     for (size_t i = 0; mesh->vertices[i]; i++)
-        free(mesh->vertices[i]);
+        destroy_vertex(mesh->vertices[i]);
 
     free(mesh->triangles);
     free(mesh->vertices);

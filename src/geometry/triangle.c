@@ -5,10 +5,10 @@
 
 Point *get_triangle_normal(Triangle *triangle)
 {
-    Point a = *(mesh->vertices[triangle->indices[1]]);
-    Point b = *(mesh->vertices[triangle->indices[2]]);
-    sub_point(&a, mesh->vertices[triangle->indices[0]]);
-    sub_point(&b, mesh->vertices[triangle->indices[0]]);
+    Point a = *(mesh->vertices[triangle->indices[1]]->position);
+    Point b = *(mesh->vertices[triangle->indices[2]]->position);
+    sub_point(&a, mesh->vertices[triangle->indices[0]]->position);
+    sub_point(&b, mesh->vertices[triangle->indices[0]]->position);
 
     Point normal = vector_cross(&a, &b);
     normal = vector_normalize(&normal);

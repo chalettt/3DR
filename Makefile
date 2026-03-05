@@ -21,7 +21,7 @@ $(TARGET): $(OBJ)
 doc:
 	doxygen Doxyfile
 
-debug: CFLAGS+=-g -fsanitize=address
+debug: CFLAGS=-g -fsanitize=address -I./include/
 debug: LDFLAGS+=-g
 debug: all
 

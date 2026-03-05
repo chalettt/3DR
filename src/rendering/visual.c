@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 
+#include "geometry/triangle.h"
 #include "geometry/vector.h"
 #include "rendering/camera.h"
 #include "rendering/sdl_manager.h"
@@ -38,17 +39,30 @@ static bool is_valid(Point p)
     return p.z > 0.01;
 }
 
-static void project_vertices(Point **vertices)
+static void project_vertices(Vertex **vertices)
 {
     for (size_t i = 0; vertices[i]; i++)
-        projected_vertices[i] = project(vertices[i]);
+        projected_vertices[i] = project(vertices[i]->position);
+}
+
+uint32_t get_color(Triangle *triangle, double w0, double w1, double w2)
+{
+    Vertex *a = mesh->vertices[triangle->indices[0]];
+    Vertex *b = mesh->vertices[triangle->indices[1]];
+    Vertex *c = mesh->vertices[triangle->indices[2]];
+
+    double intensity_a = get_light_intensity(a->normal);
+    double intensity_b = get_light_intensity(b->normal);
+    double intensity_c = get_light_intensity(c->normal);
+
+    float intensity = w0 * intensity_a + w1 * intensity_b + w2 * intensity_c;
+    intensity = fmax(0.1, fmin(intensity, 1));
+    uint8_t value = (uint8_t)(intensity * 255);
+    return (255 << 24) | (value << 16) | (value << 8) | value;
 }
 
 static void rasterize_triangle(Triangle *triangle)
 {
-    uint8_t value = (uint8_t)(get_light_intensity(triangle->normal) * 255);
-    uint32_t color = (255 << 24) | (value << 16) | (value << 8) | value;
-
     Point a = projected_vertices[triangle->indices[0]];
     Point b = projected_vertices[triangle->indices[1]];
     Point c = projected_vertices[triangle->indices[2]];
@@ -57,10 +71,10 @@ static void rasterize_triangle(Triangle *triangle)
 
     double area = determinant(&a, &b, &c);
 
-    size_t min_x = floor(fmin(a.x, fmin(b.x, c.x)));
-    size_t max_x = ceil(fmax(a.x, fmax(b.x, c.x)));
-    size_t min_y = floor(fmin(a.y, fmin(b.y, c.y)));
-    size_t max_y = ceil(fmax(a.y, fmax(b.y, c.y)));
+    double min_x = fmax(0, floor(fmin(a.x, fmin(b.x, c.x))));
+    double max_x = fmin(WIDTH, ceil(fmax(a.x, fmax(b.x, c.x))));
+    double min_y = fmax(0, floor(fmin(a.y, fmin(b.y, c.y))));
+    double max_y = fmin(HEIGHT, ceil(fmax(a.y, fmax(b.y, c.y))));
 
     for (size_t y = min_y; y < max_y; y++)
     {
@@ -82,10 +96,12 @@ static void rasterize_triangle(Triangle *triangle)
                 float depth = w0 * a.z + w1 * b.z + w2 * c.z;
 
                 int idx = y * WIDTH + x;
+                if (idx < 0 || idx >= WIDTH * HEIGHT)
+                    continue;
                 if (depth < zbuffer[idx])
                 {
                     zbuffer[idx] = depth;
-                    framebuffer[idx] = color;
+                    framebuffer[idx] = get_color(triangle, w0, w1, w2);
                 }
             }
         }
@@ -104,7 +120,7 @@ void draw_mesh(SDL_Texture *texture, Mesh *mesh)
     for (size_t i = 0; triangles[i]; i++)
     {
         Triangle *triangle = triangles[i];
-        Point rel = *(mesh->vertices[triangle->indices[0]]);
+        Point rel = *(mesh->vertices[triangle->indices[0]]->position);
         sub_point(&rel, camera->position);
         if (dot_product(triangle->normal, &rel) < 0)
             rasterize_triangle(triangle);
