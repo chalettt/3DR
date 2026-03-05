@@ -1,7 +1,7 @@
 # 3D Renderer
 
-<img src="assets/images/human.png" width="420"> <img src="assets/images/penger.png" width="420">
-<img src="assets/images/monkey.png" width="420"> <img src="assets/images/duck.png" width="420">
+<img src="assets/images/human.png" width="410"> <img src="assets/images/penger.png" width="410">
+<img src="assets/images/monkey.png" width="410"> <img src="assets/images/duck.png" width="410">
 
 This is a 3D renderer written in C using SDL2.
 
