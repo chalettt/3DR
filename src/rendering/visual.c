@@ -26,13 +26,6 @@ static void clear_buffers(void)
 static double get_light_intensity(Point *face_normal)
 {
     double intensity = dot_product(face_normal, &world_light);
-    intensity = intensity < 0 ? 0 : intensity;
-
-    double ambient = 0.1;
-    intensity += ambient;
-
-    intensity = intensity > 1 ? 1 : intensity;
-
     return intensity;
 }
 
@@ -58,7 +51,7 @@ uint32_t get_color(Triangle *triangle, double w0, double w1, double w2)
     double intensity_c = get_light_intensity(c->normal);
 
     float intensity = w0 * intensity_a + w1 * intensity_b + w2 * intensity_c;
-    intensity = fmax(0.1, fmin(intensity, 1));
+    intensity = fmax(0.2, fmin(intensity, 1));
     uint8_t value = (uint8_t)(intensity * 255);
     return (255 << 24) | (value << 16) | (value << 8) | value;
 }
