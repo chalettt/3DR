@@ -40,7 +40,8 @@ SDL2 needs to be installed for this project to be built.
 ### Inputs
 * Rotation: mouse movements
 * Pan mesh: mouse hold
-* Up/Down: <kbd>Space</kbd> <kbd>Shift</kbd> 
+* Up/Down: <kbd>Space</kbd> <kbd>Control</kbd> 
+* Go faster: <kbd>Shift</kbd>
 * Font/Left/Rear/Right: <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>
 
 ## Documentation
