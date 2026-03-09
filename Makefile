@@ -1,5 +1,6 @@
 CC = gcc
-CFLAGS = -pedantic -Werror -Wall -Wextra -Wvla -I./include/
+CPPFLAGS = -I./include/
+CFLAGS = -pedantic -Werror -Wall -Wextra -Wvla
 LDFLAGS = -lm -lSDL2
 
 SRC_DIR = src
@@ -13,16 +14,16 @@ TARGET = 3DR
 all: $(TARGET)
 
 $(TARGET): $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) $(LDFLAGS) -o $@ $^
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $^ -o $@
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $^ -o $@
 
 doc:
 	doxygen Doxyfile
 
-debug: CFLAGS=-g -fsanitize=address -I./include/
-debug: LDFLAGS+=-g
+debug: CFLAGS=-g -fsanitize=address
+debug: LDFLAGS+=-g -fsanitize=address
 debug: all
 
 clean:
